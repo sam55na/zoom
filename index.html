@@ -4,14 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
     <title>IChancy</title>
-    <script src="https://telegram.org/js/telegram-web-app.js">
-    </script>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         html, body {
             width: 100%;
@@ -20,66 +15,37 @@
             flex-direction: column;
             align-items: center;
             justify-content: flex-start;
-            background: #0a0a0a;
+            background: #0b0b14; /* خلفية داكنة جداً لإبراز الإشعاع */
             overflow-x: hidden;
             padding: 12px;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            overflow: hidden; /* لمنع التمرير عند تشغيل الأضواء */
         }
 
         .bg-image-fixed {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0; width: 100%; height: 100%;
             z-index: 0;
-            opacity: 1;
             pointer-events: none;
-            overflow: hidden;
-            background: radial-gradient(circle at center, #1a1a3e 0%, #0a0a1a 100%);
-        }
-        .bg-image-fixed img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            opacity: 0.4;
-            animation: slowZoom 30s ease-in-out infinite alternate;
-        }
-        @keyframes slowZoom {
-            0% { transform: scale(1); }
-            100% { transform: scale(1.05); }
+            background: radial-gradient(circle at center, #1a1a3e 0%, #05050a 100%);
         }
 
         /* === النصوص العلوية === */
         .top-header {
-            width: 100%;
-            max-width: 420px;
-            text-align: center;
-            z-index: 10;
-            margin-top: 20px;
-            margin-bottom: 10px;
-            position: relative;
-            color: #e5c07b;
+            width: 100%; max-width: 420px; text-align: center;
+            z-index: 10; margin-top: 20px; margin-bottom: 15px;
+            position: relative; color: #e5c07b;
         }
         .top-header .title-status {
-            font-size: 18px;
-            font-weight: 700;
-            color: #e5c07b;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
+            font-size: 18px; font-weight: 700; color: #e5c07b;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            text-shadow: 0 0 15px rgba(255, 215, 0, 0.1);
         }
         .top-header .sub-title {
-            font-size: 14px;
-            color: #d4af37;
-            margin-top: 8px;
-            line-height: 1.6;
+            font-size: 14px; color: #d4af37; margin-top: 8px; line-height: 1.6;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
         }
-        .top-header .sub-title .gold {
-            color: #ffd700;
-            font-weight: bold;
-        }
+        .top-header .sub-title .gold { color: #ffd700; font-weight: bold; }
 
         /* ===== العجلة ===== */
         .wheel-wrapper {
@@ -90,199 +56,81 @@
             aspect-ratio: 1/1;
             display: none;
             z-index: 1;
-            margin-bottom: 10px;
+            margin-bottom: 5px;
         }
-        .wheel-wrapper.show {
-            display: block;
-            animation: fadeIn 0.5s ease;
-        }
+        .wheel-wrapper.show { display: block; animation: fadeIn 0.8s cubic-bezier(0.34, 1.56, 0.64, 1); }
 
         .wheel-container {
-            position: relative;
-            width: 100%;
-            height: 100%;
+            position: relative; width: 100%; height: 100%;
             border-radius: 50%;
-            padding: 16px;
-            background: transparent;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            /* وهج خلفي دائري للعجلة بأكملها */
+            box-shadow: 0 0 60px rgba(255, 215, 0, 0.05), inset 0 0 50px rgba(255, 215, 0, 0.02);
+            display: flex; align-items: center; justify-content: center;
         }
 
-        /* ===== الحلقات الذهبية (المسامير/الإطار) ===== */
-        .wheel-border-layer {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 2;
-            background: transparent;
-            border: 6px solid #5a4a2a;
-            box-shadow: inset 0 0 20px rgba(0,0,0,0.8), 0 0 30px rgba(255, 215, 0, 0.1);
-        }
-        .wheel-rivets {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 3;
-            background: transparent;
-            border: 4px solid #b58e3b;
-            box-shadow: 0 0 15px rgba(255, 215, 0, 0.2);
-        }
-        
-        /* === المسامير الصغيرة === */
-        .rivet {
-            position: absolute;
-            width: 14px;
-            height: 14px;
-            background: radial-gradient(circle at 30% 30%, #fceabb, #b8860b);
-            border-radius: 50%;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            box-shadow: inset 0 -2px 4px rgba(0,0,0,0.5), 0 2px 4px rgba(0,0,0,0.3);
-            z-index: 4;
-        }
-        .rivet::after {
-            content: '';
-            position: absolute;
-            top: 2px;
-            left: 3px;
-            width: 4px;
-            height: 4px;
-            background: #fff;
-            border-radius: 50%;
-            opacity: 0.5;
-        }
-
-        /* ===== السهم ===== */
+        /* ===== السهم المضيء ===== */
         .pointer {
             position: absolute;
-            top: -6px;
-            left: 50%;
+            top: -6px; left: 50%;
             transform: translateX(-50%);
             z-index: 10;
-            width: 0; 
-            height: 0; 
+            width: 0; height: 0;
             border-left: 18px solid transparent;
             border-right: 18px solid transparent;
-            border-top: 35px solid #ffd700;
-            filter: drop-shadow(0 4px 10px rgba(255, 215, 0, 0.6));
+            border-top: 40px solid #ffea8c;
+            filter: drop-shadow(0 0 25px rgba(255, 215, 0, 0.8));
             pointer-events: none;
         }
         .pointer::after {
             content: '';
-            position: absolute;
-            top: -40px;
-            left: -10px;
-            width: 20px;
-            height: 20px;
-            background: radial-gradient(circle, #fff, #ffd700);
+            position: absolute; top: -46px; left: -13px;
+            width: 26px; height: 26px;
+            background: radial-gradient(circle at 30% 30%, #ffffff, #f5b200);
             border-radius: 50%;
+            box-shadow: inset 0 -3px 5px rgba(0,0,0,0.3), 0 0 30px #f5b200;
+        }
+        /* لمعان السهم */
+        .pointer::before {
+            content: '';
+            position: absolute; top: -50px; left: -5px;
+            width: 10px; height: 40px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.8), transparent);
+            transform: rotate(-25deg);
+            filter: blur(4px);
         }
 
         .wheel-wrapper canvas {
-            width: 100% !important;
-            height: 100% !important;
+            width: 100% !important; height: 100% !important;
             border-radius: 50%;
-            display: block;
-            position: relative;
-            z-index: 3;
+            display: block; position: relative; z-index: 3;
+            transition: filter 0.3s ease;
         }
         .wheel-wrapper canvas.spinning {
-            filter: brightness(1.1) drop-shadow(0 0 30px rgba(255, 215, 0, 0.2));
+            /* تأثير دوران العجلة */
+            filter: drop-shadow(0 0 40px rgba(255, 215, 0, 0.2)) brightness(1.1);
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: scale(0.94); }
-            to { opacity: 1; transform: scale(1); }
+            from { opacity: 0; transform: scale(0.9) rotate(-10deg); }
+            to { opacity: 1; transform: scale(1) rotate(0deg); }
         }
 
-        /* ===== الزر (مطابق للصورة) ===== */
-        .actions {
-            display: flex;
-            justify-content: center;
-            width: 100%;
-            max-width: 380px;
-            z-index: 1;
-            position: relative;
-            margin-top: -20px;
-        }
-        .btn {
-            padding: 18px 40px;
-            border: none;
-            border-radius: 30px;
-            font-size: 18px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            width: 100%;
-            max-width: 300px;
-            position: relative;
-        }
-        .btn-spin {
-            background: linear-gradient(180deg, #e5c07b, #b8860b);
-            color: #0a0a0a;
-            box-shadow: 0 4px 30px rgba(255, 215, 0, 0.15), inset 0 2px 0 rgba(255,255,255,0.4);
-            font-size: 20px;
-        }
-        .btn-spin:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 40px rgba(255, 215, 0, 0.2);
-        }
-        .btn-spin:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none;
-            filter: grayscale(0.5);
-        }
-        .btn-spin .spinner-small {
-            display: none;
-            width: 20px;
-            height: 20px;
-            border: 2px solid rgba(10, 10, 10, 0.15);
-            border-top: 2px solid #0a0a0a;
-            border-radius: 50%;
-            animation: spin 0.6s linear infinite;
-            margin-right: 10px;
-            vertical-align: middle;
-        }
-        .btn-spin.loading .spinner-small {
-            display: inline-block;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        .btn-spin .btn-target-icon {
-            display: inline-block;
-            margin-left: 8px;
-            font-size: 18px;
-        }
+        /* ===== باقي العناصر (محتفظ بها من الكود الأصلي للعمل) ===== */
+        .actions { display: flex; justify-content: center; width: 100%; max-width: 380px; z-index: 1; position: relative; margin-top: 0px; }
+        .btn { padding: 18px 40px; border: none; border-radius: 30px; font-size: 18px; font-weight: 700; cursor: pointer; transition: all 0.3s ease; width: 100%; max-width: 300px; position: relative; box-shadow: 0 4px 30px rgba(255, 215, 0, 0.1); }
+        .btn-spin { background: linear-gradient(180deg, #fceabb, #d4af37); color: #0a0a0a; border: 1px solid rgba(255,255,255,0.2); }
+        .btn-spin:hover:not(:disabled) { transform: translateY(-3px); box-shadow: 0 8px 40px rgba(255, 215, 0, 0.3); }
+        .btn-spin:disabled { opacity: 0.5; cursor: not-allowed; transform: none; filter: grayscale(0.5); }
+        .btn-spin .spinner-small { display: none; width: 20px; height: 20px; border: 2px solid rgba(10, 10, 10, 0.15); border-top: 2px solid #0a0a0a; border-radius: 50%; animation: spin 0.6s linear infinite; margin-right: 10px; vertical-align: middle; }
+        .btn-spin.loading .spinner-small { display: inline-block; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .btn-spin .btn-target-icon { display: inline-block; margin-left: 8px; font-size: 18px; }
 
-        /* ==== باقي العناصر (محتفظ بها من الكود الأصلي للعمل) ==== */
-        .no-prizes { display: none; text-align: center; padding: 30px 16px; color: #555; font-size: 15px; background: rgba(18, 18, 18, 0.85); border-radius: 16px; backdrop-filter: blur(6px); max-width: 420px; margin: 0 auto; z-index: 1; }
-        .deposit-notice { background: rgba(18, 18, 18, 0.85); border: 1px solid rgba(255, 215, 0, 0.06); border-radius: 12px; padding: 10px 14px; margin-top: 10px; text-align: center; display: none; width: 100%; max-width: 380px; backdrop-filter: blur(6px); margin-left: auto; margin-right: auto; z-index: 1; position: relative; }
-        .deposit-notice.show { display: block; }
-        .deposit-notice .notice-text { color: #FF8C00; font-size: 14px; }
-        .deposit-notice .notice-text .amount { color: #FFD700; font-weight: 700; }
-        .deposit-notice .notice-status { font-size: 13px; margin-top: 4px; color: #666; }
-        .deposit-notice .notice-status .met { color: #00FF88; }
-        .deposit-notice .notice-status .not-met { color: #FF4444; }
-
-        .result-box { background: rgba(18, 18, 18, 0.85); border: 1px solid rgba(255, 215, 0, 0.06); border-radius: 18px; padding: 18px 14px; margin-top: 14px; text-align: center; display: none; position: relative; overflow: hidden; width: 100%; max-width: 380px; backdrop-filter: blur(6px); margin-left: auto; margin-right: auto; z-index: 1; }
+        .result-box { background: rgba(18, 18, 18, 0.85); border: 1px solid rgba(255, 215, 0, 0.15); border-radius: 18px; padding: 18px 14px; margin-top: 14px; text-align: center; display: none; position: relative; overflow: hidden; width: 100%; max-width: 380px; backdrop-filter: blur(10px); margin-left: auto; margin-right: auto; z-index: 1; }
         .result-box.show { display: block; animation: resultPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); }
         @keyframes resultPop { 0% { transform: scale(0.85) rotate(-2deg); opacity: 0; } 100% { transform: scale(1) rotate(0deg); opacity: 1; } }
-        .result-box.winner { border-color: rgba(255, 215, 0, 0.25); background: rgba(255, 215, 0, 0.08); animation: winGlow 1.5s ease-in-out infinite alternate; }
-        @keyframes winGlow { 0% { box-shadow: 0 0 20px rgba(255, 215, 0, 0.04); } 100% { box-shadow: 0 0 80px rgba(255, 215, 0, 0.12); } }
+        .result-box.winner { border-color: rgba(255, 215, 0, 0.5); background: rgba(255, 215, 0, 0.08); animation: winGlow 1.5s ease-in-out infinite alternate; }
+        @keyframes winGlow { 0% { box-shadow: 0 0 20px rgba(255, 215, 0, 0.04); } 100% { box-shadow: 0 0 80px rgba(255, 215, 0, 0.2); } }
         .result-box .confetti-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; overflow: hidden; }
         .result-box .confetti { position: absolute; width: 12px; height: 12px; opacity: 0; animation: confettiFall 2.2s ease-in forwards; }
         @keyframes confettiFall { 0% { opacity: 1; transform: translateY(-20px) rotate(0deg) scale(1); } 100% { opacity: 0; transform: translateY(220px) rotate(720deg) scale(0); } }
@@ -373,19 +221,9 @@
             .btn { font-size: 16px; padding: 14px 16px; }
             .btn-spin { font-size: 17px; }
             .pointer { border-left-width: 14px; border-right-width: 14px; border-top-width: 30px; top: -4px; }
-            .pointer::after { width: 14px; height: 14px; top: -34px; left: -7px; }
-            .rivet { width: 10px; height: 10px; }
+            .pointer::after { width: 18px; height: 18px; top: -36px; left: -9px; }
             .result-box .prize-desc { font-size: 20px; }
             .result-box.winner .prize-desc { font-size: 24px; }
-            .admin-panel .prize-item { flex-direction: column; align-items: stretch; }
-            .admin-panel .prize-item .prize-colors { justify-content: center; }
-            .admin-panel .settings-section .setting-row { flex-direction: column; align-items: stretch; }
-            .admin-panel .settings-section .setting-row label { min-width: auto; }
-            .loading-screen .loading-image { width: 60vw; max-width: 220px; }
-            .admin-panel .add-prize-form input { min-width: 40px; font-size: 10px; }
-            .admin-panel .prize-item .prize-info { min-width: 70px; }
-            .admin-panel .prize-item .prize-prob .prob-input { width: 38px; }
-            .sound-settings { gap: 12px; padding: 4px 12px; }
             .top-header .title-status { font-size: 16px; }
             .top-header .sub-title { font-size: 12px; }
         }
@@ -393,9 +231,7 @@
 </head>
 <body>
 
-    <div class="bg-image-fixed">
-        <img id="bgImage" src="https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=1920&q=80" alt="Background">
-    </div>
+    <div class="bg-image-fixed"></div>
 
     <div class="notification-bar" id="notificationBar">
         🎉 مبروك! لقد فزت بـ <span id="notifPrizeName">جائزة</span>!
@@ -404,24 +240,18 @@
     <div class="error-container" id="errorContainer">
         <div class="error-icon">⚠️</div>
         <div class="error-title">يجب الدخول من البوت</div>
-        <div class="error-text">
-            لا يمكن الوصول إلى معرف المستخدم.<br>
-            يرجى فتح العجلة من خلال <span class="highlight">بوت IChancy</span>.
-        </div>
+        <div class="error-text">لا يمكن الوصول إلى معرف المستخدم.<br>يرجى فتح العجلة من خلال <span class="highlight">بوت IChancy</span>.</div>
         <button class="btn-open-bot" onclick="window.open('https://t.me/IChancyBot', '_blank')">🚀 فتح البوت</button>
     </div>
 
     <div class="loading-screen" id="loadingScreen">
         <img class="loading-image" id="loadingImage" src="https://via.placeholder.com/200/1a1a2e/FFD700?text=🎡" alt="Loading">
         <div class="progress-container">
-            <div class="progress-bar-bg">
-                <div class="progress-bar-fill" id="loaderProgressBar"></div>
-            </div>
+            <div class="progress-bar-bg"><div class="progress-bar-fill" id="loaderProgressBar"></div></div>
             <div class="progress-text" id="loaderStatusText">0%</div>
         </div>
     </div>
 
-    <!-- ===== النصوص العلوية ===== -->
     <div class="top-header">
         <div class="title-status">🔒 لا تملك أي لفة حالياً</div>
         <div class="sub-title">
@@ -432,36 +262,13 @@
         </div>
     </div>
 
-    <!-- ===== العجلة المطابقة للصورة ===== -->
     <div class="wheel-wrapper" id="wheelWrapper">
         <div class="wheel-container">
-            <!-- الإطار الخارجي -->
-            <div class="wheel-border-layer"></div>
-            <div class="wheel-rivets"></div>
-            
-            <!-- المسامير الذهبية الصغيرة -->
-            <div class="rivet" style="top: 6%; left: 50%;"></div>
-            <div class="rivet" style="top: 13.5%; left: 75%;"></div>
-            <div class="rivet" style="top: 25%; left: 90.5%;"></div>
-            <div class="rivet" style="top: 50%; left: 97%;"></div>
-            <div class="rivet" style="top: 75%; left: 90.5%;"></div>
-            <div class="rivet" style="top: 86.5%; left: 75%;"></div>
-            <div class="rivet" style="top: 94%; left: 50%;"></div>
-            <div class="rivet" style="top: 86.5%; left: 25%;"></div>
-            <div class="rivet" style="top: 75%; left: 9.5%;"></div>
-            <div class="rivet" style="top: 50%; left: 3%;"></div>
-            <div class="rivet" style="top: 25%; left: 9.5%;"></div>
-            <div class="rivet" style="top: 13.5%; left: 25%;"></div>
-
-            <!-- السهم (الموجود أعلى العجلة) -->
             <div class="pointer" id="pointer"></div>
-
-            <!-- اللوحة الرئيسية -->
             <canvas id="wheelCanvas" width="500" height="500"></canvas>
         </div>
     </div>
 
-    <!-- ===== الزر الذهبي ===== -->
     <div class="actions">
         <button class="btn btn-spin" id="spinBtn" disabled>
             <span class="spinner-small"></span>
@@ -470,111 +277,42 @@
         </button>
     </div>
 
-    <div class="no-prizes" id="noPrizes">
-        <div style="font-size:28px;">⚠️</div>
-        <div style="margin-top:6px;">لا توجد جوائز متاحة</div>
-    </div>
-
-    <div class="deposit-notice" id="depositNotice">
-        <div class="notice-text">
-            💰 مطلوب إيداع <span class="amount" id="depositMinAmount">0</span> SYP
-            خلال <span id="depositCheckHours">24</span> ساعة
-        </div>
-        <div class="notice-status" id="depositStatus">
-            الحالة: <span class="not-met">❌ غير مكتمل</span>
-        </div>
-    </div>
-
     <div class="result-box" id="resultBox">
         <div class="confetti-container" id="confettiContainer"></div>
         <div class="prize-desc" id="prizeDesc"></div>
     </div>
 
     <div class="sound-settings">
-        <label>
-            <span class="sound-indicator">🔊</span>
-            <input type="checkbox" id="soundToggle" checked> مؤثرات
-        </label>
+        <label><span class="sound-indicator">🔊</span><input type="checkbox" id="soundToggle" checked> مؤثرات</label>
     </div>
 
     <div class="admin-panel" id="adminPanel">
-        <div class="panel-title">
-            ⚙️ لوحة الإدارة
-            <span class="badge">ADMIN</span>
-        </div>
+        <div class="panel-title">⚙️ لوحة الإدارة <span class="badge">ADMIN</span></div>
         <div id="prizesList"></div>
-
         <div class="add-prize-form">
-            <input type="text" id="newPrizeName" placeholder="الاسم (للإدارة)">
-            <input type="text" id="newPrizeIcon" placeholder="🎁" style="max-width:44px;">
-            <input type="text" id="newPrizeDesc" placeholder="الوصف (يظهر للجمهور)" style="flex:1.5;">
-            <input type="number" id="newPrizeProb" placeholder="نسبة" style="max-width:55px;">
-            <input type="color" id="newPrizeColor" value="#1a1a2e" style="max-width:34px;padding:2px;">
-            <input type="color" id="newPrizeColor2" value="#16213e" style="max-width:34px;padding:2px;">
+            <input type="text" id="newPrizeName" placeholder="الاسم"><input type="text" id="newPrizeIcon" placeholder="🎁" style="max-width:44px;">
+            <input type="text" id="newPrizeDesc" placeholder="الوصف" style="flex:1.5;"><input type="number" id="newPrizeProb" placeholder="نسبة" style="max-width:55px;">
+            <input type="color" id="newPrizeColor" value="#1f2b4a" style="max-width:34px;padding:2px;">
+            <input type="color" id="newPrizeColor2" value="#111d35" style="max-width:34px;padding:2px;">
             <button class="btn-add" id="addPrizeBtn">➕</button>
         </div>
-
         <div class="panel-actions">
             <button class="btn-action" id="refreshPrizesBtn">🔄 تحديث الكل</button>
             <button class="btn-action danger" id="resetPrizesBtn">🗑️ إعادة تعيين</button>
         </div>
-
         <div class="settings-section">
-            <div class="setting-row">
-                <label>صورة الخلفية</label>
-                <input type="text" id="editBgImage" placeholder="رابط الصورة">
-                <button class="btn-save" data-setting="bg_image_url" data-field="editBgImage">💾 حفظ</button>
-            </div>
-            <div class="setting-row">
-                <label>صورة اللودينغ</label>
-                <input type="text" id="editLoadingImage" placeholder="رابط صورة اللودينغ">
-                <button class="btn-save" data-setting="loading_image_url" data-field="editLoadingImage">💾 حفظ</button>
-            </div>
-            <div class="setting-row">
-                <label>مركز العجلة</label>
-                <input type="text" id="editCenterIcon" placeholder="🎯" style="max-width:80px;">
-                <button class="btn-save" data-setting="center_icon" data-field="editCenterIcon">💾 حفظ</button>
-            </div>
-            <div class="setting-row">
-                <label>مدة التدوير</label>
-                <input type="number" id="editSpinDuration" placeholder="3500" style="max-width:80px;">
-                <span style="color:#555;font-size:11px;">مللي ثانية</span>
-                <button class="btn-save" data-setting="spin_duration" data-field="editSpinDuration">💾 حفظ</button>
-            </div>
-            <div class="setting-row">
-                <label>فترة التبريد</label>
-                <input type="number" id="editIntervalHours" placeholder="24" style="max-width:60px;">
-                <span style="color:#555;font-size:11px;">ساعة</span>
-                <button class="btn-save" data-setting="spin_interval_hours" data-field="editIntervalHours">💾 حفظ</button>
-            </div>
-            <div class="toggle-row">
-                <label>تفعيل العجلة</label>
-                <input type="checkbox" id="editIsActive">
-                <button class="btn-save" data-setting="is_active" data-field="editIsActive" data-type="checkbox">💾 حفظ</button>
-            </div>
-            <div class="toggle-row">
-                <label>تفعيل شرط الإيداع</label>
-                <input type="checkbox" id="editDepositRequired">
-                <button class="btn-save" data-setting="deposit_required" data-field="editDepositRequired" data-type="checkbox">💾 حفظ</button>
-            </div>
-            <div class="setting-row">
-                <label>الحد الأدنى للإيداع</label>
-                <input type="number" id="editDepositMin" placeholder="1000" style="max-width:80px;">
-                <span style="color:#555;font-size:11px;">SYP</span>
-                <button class="btn-save" data-setting="deposit_min_amount" data-field="editDepositMin">💾 حفظ</button>
-            </div>
-            <div class="setting-row">
-                <label>مدة صلاحية الإيداع</label>
-                <input type="number" id="editDepositHours" placeholder="24" style="max-width:60px;">
-                <span style="color:#555;font-size:11px;">ساعة</span>
-                <button class="btn-save" data-setting="deposit_check_hours" data-field="editDepositHours">💾 حفظ</button>
-            </div>
+            <div class="setting-row"><label>صورة الخلفية</label><input type="text" id="editBgImage"><button class="btn-save" data-setting="bg_image_url" data-field="editBgImage">💾 حفظ</button></div>
+            <div class="setting-row"><label>صورة اللودينغ</label><input type="text" id="editLoadingImage"><button class="btn-save" data-setting="loading_image_url" data-field="editLoadingImage">💾 حفظ</button></div>
+            <div class="setting-row"><label>مركز العجلة</label><input type="text" id="editCenterIcon" value="🎯" style="max-width:80px;"><button class="btn-save" data-setting="center_icon" data-field="editCenterIcon">💾 حفظ</button></div>
+            <div class="setting-row"><label>مدة التدوير</label><input type="number" id="editSpinDuration" placeholder="3500" style="max-width:80px;"><span style="color:#555;font-size:11px;">مللي ثانية</span><button class="btn-save" data-setting="spin_duration" data-field="editSpinDuration">💾 حفظ</button></div>
+            <div class="setting-row"><label>فترة التبريد</label><input type="number" id="editIntervalHours" placeholder="24" style="max-width:60px;"><span style="color:#555;font-size:11px;">ساعة</span><button class="btn-save" data-setting="spin_interval_hours" data-field="editIntervalHours">💾 حفظ</button></div>
+            <div class="toggle-row"><label>تفعيل العجلة</label><input type="checkbox" id="editIsActive"><button class="btn-save" data-setting="is_active" data-field="editIsActive" data-type="checkbox">💾 حفظ</button></div>
+            <div class="toggle-row"><label>تفعيل شرط الإيداع</label><input type="checkbox" id="editDepositRequired"><button class="btn-save" data-setting="deposit_required" data-field="editDepositRequired" data-type="checkbox">💾 حفظ</button></div>
+            <div class="setting-row"><label>الحد الأدنى للإيداع</label><input type="number" id="editDepositMin" placeholder="1000" style="max-width:80px;"><span style="color:#555;font-size:11px;">SYP</span><button class="btn-save" data-setting="deposit_min_amount" data-field="editDepositMin">💾 حفظ</button></div>
         </div>
     </div>
 
-    <div class="error-msg" id="errorMsg">
-        <span id="errorText"></span>
-    </div>
+    <div class="error-msg" id="errorMsg"><span id="errorText"></span></div>
 
     <script>
         // ================================================================
@@ -590,267 +328,143 @@
         let settingsCache = {};
         let spinDuration = 3500;
 
-        // ================================================================
-        //                      نظام إعادة محاولة الاتصال
-        // ================================================================
+        // دوال الاتصال والعرض (محتفظ بها من الكود الأصلي للحفاظ على الوظائف)
         class ConnectionManager {
-            constructor() {
-                this.maxRetries = 3;
-                this.retryDelay = 2000;
-                this.timeout = 50000;
-            }
-
+            constructor() { this.maxRetries = 3; this.retryDelay = 2000; this.timeout = 50000; }
             async fetchWithRetry(url, options = {}, retryCount = 0) {
                 const controller = new AbortController();
                 const timeoutId = setTimeout(() => controller.abort(), this.timeout);
-
                 try {
-                    const response = await fetch(url, {
-                        ...options,
-                        signal: controller.signal
-                    });
+                    const response = await fetch(url, { ...options, signal: controller.signal });
                     clearTimeout(timeoutId);
-
-                    if (!response.ok) {
-                        throw new Error(`HTTP ${response.status}`);
-                    }
-
+                    if (!response.ok) throw new Error(`HTTP ${response.status}`);
                     return response;
                 } catch (error) {
                     clearTimeout(timeoutId);
-
-                    if (error.name === 'AbortError') {
-                        throw new Error('انتهت مهلة الاتصال بالخادم (50 ثانية)');
-                    }
-
+                    if (error.name === 'AbortError') throw new Error('انتهت مهلة الاتصال بالخادم (50 ثانية)');
                     if (retryCount < this.maxRetries) {
-                        const delay = this.retryDelay * (retryCount + 1);
-                        console.log(`محاولة إعادة الاتصال ${retryCount + 1}/${this.maxRetries} بعد ${delay}ms`);
-                        await new Promise(resolve => setTimeout(resolve, delay));
+                        await new Promise(resolve => setTimeout(resolve, this.retryDelay * (retryCount + 1)));
                         return this.fetchWithRetry(url, options, retryCount + 1);
                     }
-
                     throw error;
                 }
             }
         }
-
         const connectionManager = new ConnectionManager();
 
-        // ================================================================
-        //                      نظام الصوت
-        // ================================================================
+        // ====== نظام الصوت ======
         class AdvancedSoundManager {
-            constructor() {
-                this.initialized = false;
-                this.audioContext = null;
-                this.isPlaying = false;
-                this.spinSoundInterval = null;
-            }
-
+            constructor() { this.initialized = false; this.audioContext = null; this.spinSoundInterval = null; }
             init() {
                 if (this.initialized) return;
-                try {
-                    this.audioContext = new(window.AudioContext || window.webkitAudioContext)();
-                    this.initialized = true;
-                } catch (e) { console.warn('Web Audio not supported'); }
+                try { this.audioContext = new (window.AudioContext || window.webkitAudioContext)(); this.initialized = true; } catch (e) {}
             }
-
             stopAll() {
-                this.stopSpinSound();
-                if (this.audioContext) {
-                    try {
-                        this.audioContext.close();
-                        this.audioContext = new(window.AudioContext || window.webkitAudioContext)();
-                    } catch (e) {}
-                }
-                this.isPlaying = false;
+                if (this.spinSoundInterval) clearInterval(this.spinSoundInterval);
+                this.spinSoundInterval = null;
+                if (this.audioContext) try { this.audioContext.close(); this.audioContext = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) {}
             }
-
             playSpinSound() {
                 if (!soundEnabled || !this.initialized) return;
-                this.stopSpinSound();
+                this.stopAll();
                 try {
                     const ctx = this.audioContext;
                     let count = 0;
                     this.spinSoundInterval = setInterval(() => {
-                        if (!soundEnabled || !this.initialized) {
-                            this.stopSpinSound();
-                            return;
-                        }
+                        if (!soundEnabled) { this.stopAll(); return; }
                         try {
                             const t = ctx.currentTime;
-                            const osc = ctx.createOscillator();
-                            const gain = ctx.createGain();
-                            osc.connect(gain);
-                            gain.connect(ctx.destination);
-                            const freq = 180 + Math.sin(count * 0.7) * 25 + Math.sin(count * 0.3) * 15;
-                            osc.frequency.setValueAtTime(freq, t);
-                            osc.type = 'sine';
-                            gain.gain.setValueAtTime(0.025, t);
-                            gain.gain.exponentialRampToValueAtTime(0.001, t + 0.07);
-                            osc.start(t);
-                            osc.stop(t + 0.07);
+                            const osc = ctx.createOscillator(); const gain = ctx.createGain();
+                            osc.connect(gain); gain.connect(ctx.destination);
+                            osc.frequency.setValueAtTime(180 + Math.sin(count * 0.7) * 25, t);
+                            gain.gain.setValueAtTime(0.025, t); gain.gain.exponentialRampToValueAtTime(0.001, t + 0.07);
+                            osc.start(t); osc.stop(t + 0.07);
                             count++;
-                        } catch (e) { console.warn('Spin sound tick error:', e); }
+                        } catch (e) {}
                     }, 110);
-                    setTimeout(() => this.stopSpinSound(), 6000);
-                } catch (e) { console.warn('Spin sound error:', e); }
+                } catch (e) {}
             }
-
-            stopSpinSound() {
-                if (this.spinSoundInterval) {
-                    clearInterval(this.spinSoundInterval);
-                    this.spinSoundInterval = null;
-                }
-            }
-
             playWinSound() {
                 if (!soundEnabled || !this.initialized) return;
                 try {
-                    const ctx = this.audioContext;
-                    const now = ctx.currentTime;
-                    const notes = [
-                        [523, 0.2, 0.06], [587, 0.2, 0.06], [659, 0.2, 0.06], [784, 0.3, 0.07],
-                        [659, 0.2, 0.06], [784, 0.2, 0.06], [880, 0.2, 0.06], [988, 0.35, 0.08],
-                        [880, 0.2, 0.06], [784, 0.2, 0.06], [880, 0.2, 0.06], [1175, 0.4, 0.09]
-                    ];
-                    notes.forEach(([freq, dur, vol], i) => {
-                        const osc = ctx.createOscillator();
-                        const gain = ctx.createGain();
-                        osc.connect(gain);
-                        gain.connect(ctx.destination);
+                    const ctx = this.audioContext; const now = ctx.currentTime;
+                    const notes = [[523,0.2],[587,0.2],[659,0.2],[784,0.3]];
+                    notes.forEach(([freq, dur], i) => {
+                        const osc = ctx.createOscillator(); const gain = ctx.createGain();
+                        osc.connect(gain); gain.connect(ctx.destination);
                         osc.frequency.setValueAtTime(freq, now + i * 0.08);
-                        osc.type = i % 2 === 0 ? 'sine' : 'triangle';
-                        gain.gain.setValueAtTime(vol || 0.05, now + i * 0.08);
+                        gain.gain.setValueAtTime(0.05, now + i * 0.08);
                         gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.08 + dur);
-                        osc.start(now + i * 0.08);
-                        osc.stop(now + i * 0.08 + dur);
+                        osc.start(now + i * 0.08); osc.stop(now + i * 0.08 + dur);
                     });
-                    setTimeout(() => {
-                        const t = ctx.currentTime;
-                        [523, 587, 659, 784].forEach((freq, i) => {
-                            const osc = ctx.createOscillator();
-                            const gain = ctx.createGain();
-                            osc.connect(gain);
-                            gain.connect(ctx.destination);
-                            osc.frequency.setValueAtTime(freq, t + i * 0.07);
-                            osc.type = 'sine';
-                            gain.gain.setValueAtTime(0.025, t + i * 0.07);
-                            gain.gain.exponentialRampToValueAtTime(0.001, t + i * 0.07 + 0.25);
-                            osc.start(t + i * 0.07);
-                            osc.stop(t + i * 0.07 + 0.25);
-                        });
-                    }, notes.length * 0.08 + 0.1);
-                    setTimeout(() => { this.isPlaying = false; }, 3000);
-                } catch (e) { console.warn('Win sound error:', e); this.isPlaying = false; }
+                } catch (e) {}
             }
-
             playLoseSound() {
                 if (!soundEnabled || !this.initialized) return;
                 try {
-                    const ctx = this.audioContext;
-                    const now = ctx.currentTime;
-                    const notes = [
-                        [440, 0.35, 0.04], [370, 0.35, 0.04], [330, 0.45, 0.05], [247, 0.6, 0.05]
-                    ];
-                    notes.forEach(([freq, dur, vol], i) => {
-                        const osc = ctx.createOscillator();
-                        const gain = ctx.createGain();
-                        osc.connect(gain);
-                        gain.connect(ctx.destination);
+                    const ctx = this.audioContext; const now = ctx.currentTime;
+                    const notes = [[440,0.35],[370,0.35],[330,0.45],[247,0.6]];
+                    notes.forEach(([freq, dur], i) => {
+                        const osc = ctx.createOscillator(); const gain = ctx.createGain();
+                        osc.connect(gain); gain.connect(ctx.destination);
                         osc.frequency.setValueAtTime(freq, now + i * 0.25);
-                        osc.type = 'sawtooth';
-                        gain.gain.setValueAtTime(vol || 0.04, now + i * 0.25);
+                        gain.gain.setValueAtTime(0.04, now + i * 0.25);
                         gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.25 + dur);
-                        osc.start(now + i * 0.25);
-                        osc.stop(now + i * 0.25 + dur);
+                        osc.start(now + i * 0.25); osc.stop(now + i * 0.25 + dur);
                     });
-                    setTimeout(() => {
-                        const t = ctx.currentTime;
-                        const osc2 = ctx.createOscillator();
-                        const gain2 = ctx.createGain();
-                        osc2.connect(gain2);
-                        gain2.connect(ctx.destination);
-                        osc2.frequency.setValueAtTime(200, t);
-                        osc2.frequency.exponentialRampToValueAtTime(100, t + 0.7);
-                        osc2.type = 'sawtooth';
-                        gain2.gain.setValueAtTime(0.02, t);
-                        gain2.gain.exponentialRampToValueAtTime(0.001, t + 0.7);
-                        osc2.start(t);
-                        osc2.stop(t + 0.7);
-                    }, notes.length * 0.25 + 0.1);
-                    setTimeout(() => { this.isPlaying = false; }, 2000);
-                } catch (e) { console.warn('Lose sound error:', e); this.isPlaying = false; }
+                } catch (e) {}
             }
-
             playStartSound() {
                 if (!soundEnabled || !this.initialized) return;
                 try {
-                    const ctx = this.audioContext;
-                    const now = ctx.currentTime;
+                    const ctx = this.audioContext; const now = ctx.currentTime;
                     [440, 554, 659].forEach((freq, i) => {
-                        const osc = ctx.createOscillator();
-                        const gain = ctx.createGain();
-                        osc.connect(gain);
-                        gain.connect(ctx.destination);
+                        const osc = ctx.createOscillator(); const gain = ctx.createGain();
+                        osc.connect(gain); gain.connect(ctx.destination);
                         osc.frequency.setValueAtTime(freq, now + i * 0.1);
-                        osc.type = 'sine';
                         gain.gain.setValueAtTime(0.02, now + i * 0.1);
                         gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.1 + 0.12);
-                        osc.start(now + i * 0.1);
-                        osc.stop(now + i * 0.1 + 0.12);
+                        osc.start(now + i * 0.1); osc.stop(now + i * 0.1 + 0.12);
                     });
-                } catch (e) { console.warn('Start sound error:', e); }
+                } catch (e) {}
             }
         }
-
         const soundManager = new AdvancedSoundManager();
 
-        // ================================================================
-        //                      جلب USER_ID
-        // ================================================================
         function getUserId() {
             const params = new URLSearchParams(window.location.search);
             let id = params.get('user_id') || params.get('userId') || params.get('id');
-            if (id && !isNaN(id)) {
-                USER_ID = parseInt(id);
-                localStorage.setItem('wheel_user_id', USER_ID);
-                return USER_ID;
-            }
+            if (id && !isNaN(id)) { USER_ID = parseInt(id); localStorage.setItem('wheel_user_id', USER_ID); return USER_ID; }
             try {
                 if (window.Telegram && window.Telegram.WebApp) {
                     const user = window.Telegram.WebApp.initDataUnsafe?.user;
-                    if (user && user.id) {
-                        USER_ID = user.id;
-                        localStorage.setItem('wheel_user_id', USER_ID);
-                        return USER_ID;
-                    }
+                    if (user && user.id) { USER_ID = user.id; localStorage.setItem('wheel_user_id', USER_ID); return USER_ID; }
                 }
             } catch (e) {}
             id = localStorage.getItem('wheel_user_id');
-            if (id) {
-                USER_ID = parseInt(id);
-                return USER_ID;
-            }
+            if (id) { USER_ID = parseInt(id); return USER_ID; }
             return null;
         }
 
         // ================================================================
-        //                      رسم العجلة (مطابق للصورة)
+        //      الرسم المتقدم (مع أضواء الـ Chase واللمعان المعدني)
         // ================================================================
+        let lightFrameOffset = 0;
+        let animationFrameId = null;
+
         function drawWheel(prizes, highlightIndex = -1, rotation = 0) {
             const canvas = document.getElementById('wheelCanvas');
             const ctx = canvas.getContext('2d');
             const w = canvas.width, h = canvas.height;
             const cx = w / 2, cy = h / 2;
-            const r = Math.min(w, h) / 2 - 18; // تم تصغير القطر ليناسب الإطار الجديد
+            const r = Math.min(w, h) / 2 - 16;
             const noPrizes = document.getElementById('noPrizes');
             const wrapper = document.getElementById('wheelWrapper');
 
             if (!prizes || prizes.length === 0) {
                 noPrizes.style.display = 'block';
                 wrapper.classList.remove('show');
+                if (animationFrameId) cancelAnimationFrame(animationFrameId);
                 return;
             }
 
@@ -858,8 +472,15 @@
             wrapper.classList.add('show');
             ctx.clearRect(0, 0, w, h);
 
+            // 1. رسم العجلة ذات القطاعات المتناوبة
             const total = prizes.length;
             const step = (2 * Math.PI) / total;
+
+            // رسم ظل خارجي مضيء أسفل العجلة
+            ctx.shadowColor = 'rgba(255, 215, 0, 0.2)';
+            ctx.shadowBlur = 50;
+            ctx.beginPath(); ctx.arc(cx, cy, r, 0, 2 * Math.PI); ctx.fillStyle = 'rgba(0,0,0,0)'; ctx.fill();
+            ctx.shadowBlur = 0;
 
             prizes.forEach((p, i) => {
                 const start = i * step + rotation - Math.PI / 2;
@@ -871,19 +492,21 @@
                 ctx.arc(cx, cy, r, start, end);
                 ctx.closePath();
 
-                // الألوان الأساسية للقطاعات
-                const color1 = isHighlight ? '#ffd700' : (i % 2 === 0 ? '#1f2b4a' : '#f0e6c8');
-                const color2 = isHighlight ? '#ffaa00' : (i % 2 === 0 ? '#111d35' : '#d4bf8c');
-                
-                ctx.fillStyle = color1;
+                // أنظمة الألوان المتناوبة (أزرق داكن، ذهبي فاتح)
+                const color1 = isHighlight ? '#ffdd00' : (i % 2 === 0 ? '#1f3050' : '#f0e6cb');
+                const color2 = isHighlight ? '#ff8800' : (i % 2 === 0 ? '#0a1220' : '#d0c098');
+                const grad = ctx.createRadialGradient(cx - r*0.15, cy - r*0.15, 0, cx, cy, r);
+                grad.addColorStop(0, isHighlight ? '#fff8b0' : color1);
+                grad.addColorStop(1, color2);
+                ctx.fillStyle = grad;
                 ctx.fill();
 
-                // إضافة حدود ذهبية للقطاعات
-                ctx.strokeStyle = 'rgba(184, 134, 11, 0.4)';
-                ctx.lineWidth = 2;
+                // خطوط فواصل مضيئة
+                ctx.strokeStyle = isHighlight ? '#ffffff' : 'rgba(255, 215, 0, 0.3)';
+                ctx.lineWidth = isHighlight ? 3 : 1.5;
                 ctx.stroke();
 
-                // النص والأيقونات
+                // النصوص
                 const mid = start + step / 2;
                 const tr = r * 0.62;
                 const x = cx + Math.cos(mid) * tr;
@@ -892,95 +515,114 @@
                 ctx.save();
                 ctx.translate(x, y);
                 ctx.rotate(mid + (mid > Math.PI / 2 ? Math.PI : 0));
-
-                const txtColor = (i % 2 === 0) ? '#ffffff' : '#111d35';
+                const txtColor = isHighlight ? '#000' : (i % 2 === 0 ? '#fff' : '#0a1220');
                 ctx.fillStyle = txtColor;
-                ctx.font = 'bold 18px sans-serif';
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
-                ctx.shadowColor = 'rgba(0,0,0,0.6)';
-                ctx.shadowBlur = 4;
-
-                // رسم الأيقونة (أعلى)
-                ctx.font = '30px sans-serif';
-                ctx.fillText(p.icon || '🎁', 0, -14);
-                
-                // رسم اسم الجائزة (أسفل)
-                ctx.font = `bold 16px sans-serif`;
-                ctx.shadowBlur = 6;
+                ctx.shadowColor = isHighlight ? 'rgba(255,255,255,0.8)' : 'rgba(0,0,0,0.4)';
+                ctx.shadowBlur = 10;
+                ctx.font = '28px sans-serif';
+                ctx.fillText(p.icon || '🎁', 0, -12);
+                ctx.font = 'bold 15px sans-serif';
+                ctx.shadowBlur = 5;
                 let displayText = p.name || 'جائزة';
-                if (displayText.length > 8) displayText = displayText.substring(0,8) + '...';
-                ctx.fillText(displayText, 0, 24);
-
+                if (displayText.length > 10) displayText = displayText.substring(0,10) + '..';
+                ctx.fillText(displayText, 0, 22);
                 ctx.shadowBlur = 0;
                 ctx.restore();
             });
 
-            // مركز العجلة الذهبي
-            const centerR = r * 0.18;
+            // 2. الإطار الخارجي المزدوج
             ctx.save();
-            ctx.shadowColor = 'rgba(255, 215, 0, 0.8)';
-            ctx.shadowBlur = 20;
-            
-            const grad = ctx.createRadialGradient(cx - 5, cy - 5, 0, cx, cy, centerR);
-            grad.addColorStop(0, '#fceabb');
-            grad.addColorStop(0.5, '#f8b500');
-            grad.addColorStop(1, '#b8860b');
-            ctx.beginPath();
-            ctx.arc(cx, cy, centerR, 0, 2 * Math.PI);
-            ctx.fillStyle = grad;
-            ctx.fill();
-            
-            ctx.shadowBlur = 0;
-            ctx.strokeStyle = '#fceabb';
-            ctx.lineWidth = 2;
-            ctx.stroke();
+            ctx.beginPath(); ctx.arc(cx, cy, r + 8, 0, 2 * Math.PI);
+            ctx.strokeStyle = '#d4af37'; ctx.lineWidth = 4; ctx.shadowColor = '#d4af37'; ctx.shadowBlur = 15; ctx.stroke();
+            ctx.beginPath(); ctx.arc(cx, cy, r + 14, 0, 2 * Math.PI);
+            ctx.strokeStyle = '#8b6914'; ctx.lineWidth = 3; ctx.shadowBlur = 5; ctx.stroke();
             ctx.restore();
 
-            // أيقونة المركز
-            ctx.fillStyle = '#0a0a0a';
-            ctx.font = 'bold 28px sans-serif';
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            const centerIcon = settingsCache.center_icon || '🎯';
-            ctx.fillText(centerIcon, cx, cy + 2);
-        }
-
-        // ================================================================
-        //                      دوران العجلة
-        // ================================================================
-        function animateSpin(targetRotation, duration, callback) {
-            const canvas = document.getElementById('wheelCanvas');
-            canvas.classList.add('spinning');
-
-            const startRotation = currentRotation;
-            const startTime = performance.now();
-
-            function animate(time) {
-                const elapsed = time - startTime;
-                const progress = Math.min(elapsed / duration, 1);
-                const easeOutCubic = 1 - Math.pow(1 - progress, 3);
-                const easedProgress = easeOutCubic;
-
-                const currentAngle = startRotation + (targetRotation - startRotation) * easedProgress;
-                currentRotation = currentAngle;
-
-                drawWheel(prizesCache, -1, currentAngle);
-
-                if (progress < 1) {
-                    requestAnimationFrame(animate);
+            // 3. أضواء الإطار المتحركة (Chase Light) + المسامير الثابتة
+            const numLights = 20;
+            for(let i = 0; i < numLights; i++) {
+                const angle = (i / numLights) * 2 * Math.PI - Math.PI / 2;
+                const lx = cx + Math.cos(angle) * (r + 11);
+                const ly = cy + Math.sin(angle) * (r + 11);
+                
+                // تحديد موقع الضوء الحالي المتوهج بناءً على الـ offset
+                const isLit = (i === Math.floor(lightFrameOffset) % numLights);
+                
+                ctx.save();
+                ctx.shadowColor = isLit ? '#ffd700' : 'transparent';
+                ctx.shadowBlur = isLit ? 25 : 0;
+                
+                // رسم المسامير الدائرية
+                ctx.beginPath(); ctx.arc(lx, ly, 6, 0, 2 * Math.PI);
+                if (isLit) {
+                    // عندما يضيء، لون أبيض ذهبي
+                    ctx.fillStyle = '#ffffff';
+                    ctx.shadowColor = '#ffd700';
+                    ctx.shadowBlur = 35;
                 } else {
-                    currentRotation = targetRotation;
-                    canvas.classList.remove('spinning');
-                    if (callback) callback();
+                    // عندما يطفأ، لون نحاسي داكن
+                    ctx.fillStyle = '#6b5a3e';
+                    ctx.shadowBlur = 0;
+                }
+                ctx.fill();
+                ctx.restore();
+
+                // لمعان صغير في منتصف كل مسمار
+                if (!isLit) {
+                    ctx.beginPath(); ctx.arc(lx-1, ly-1, 2, 0, 2 * Math.PI);
+                    ctx.fillStyle = 'rgba(255,255,255,0.15)'; ctx.fill();
                 }
             }
 
-            requestAnimationFrame(animate);
+            // تحديث الـ Offset لتحريك الأضواء
+            lightFrameOffset = (lightFrameOffset + 0.06); // سرعة دوران الضوء
+
+            // 4. مركز العجلة (القطعة المعدنية الدائرية)
+            const centerR = r * 0.17;
+            ctx.save();
+            ctx.shadowColor = 'rgba(255, 215, 0, 0.3)'; ctx.shadowBlur = 30;
+            // تدرج معدني ثلاثي الأبعاد
+            const gradCenter = ctx.createRadialGradient(cx - 4, cy - 6, 2, cx, cy, centerR);
+            gradCenter.addColorStop(0, '#fff5d1');
+            gradCenter.addColorStop(0.3, '#fceabb');
+            gradCenter.addColorStop(0.7, '#d4af37');
+            gradCenter.addColorStop(1, '#a87f16');
+            ctx.beginPath(); ctx.arc(cx, cy, centerR, 0, 2 * Math.PI);
+            ctx.fillStyle = gradCenter;
+            ctx.fill();
+            ctx.strokeStyle = '#fff5d1'; ctx.lineWidth = 1.5;
+            ctx.stroke();
+            ctx.shadowBlur = 0;
+            
+            // نقطة لمعان (Specular Highlight)
+            ctx.beginPath(); ctx.ellipse(cx - 5, cy - 8, 8, 3, -0.3, 0, 2*Math.PI);
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.5)'; ctx.fill();
+            ctx.restore();
+
+            // رسم أيقونة المركز بخط عريض واضح
+            ctx.fillStyle = '#0a0a0a';
+            ctx.font = 'bold 28px sans-serif';
+            ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+            const centerIcon = settingsCache.center_icon || '🎯';
+            ctx.fillText(centerIcon, cx + 1, cy + 2);
+        }
+
+        // حلقة دوران الأضواء
+        function startLightLoop() {
+            if (animationFrameId) cancelAnimationFrame(animationFrameId);
+            function loop() {
+                if (prizesCache && prizesCache.length > 0) {
+                    drawWheel(prizesCache, -1, currentRotation);
+                }
+                animationFrameId = requestAnimationFrame(loop);
+            }
+            loop();
         }
 
         // ================================================================
-        //                      دوال الإدارة (محفوظة)
+        //                      دوال الإدارة والبيانات (محفوظة)
         // ================================================================
         async function loadSettings() {
             try {
@@ -988,10 +630,7 @@
                 const data = await res.json();
                 if (data.success) {
                     settingsCache = data.settings;
-                    if (settingsCache.bg_image_url) document.getElementById('bgImage').src = settingsCache.bg_image_url;
-                    if (settingsCache.loading_image_url) document.getElementById('loadingImage').src = settingsCache.loading_image_url;
                     if (settingsCache.spin_duration) spinDuration = parseInt(settingsCache.spin_duration) || 3500;
-                    // Fill admin inputs
                     document.getElementById('editBgImage').value = settingsCache.bg_image_url || '';
                     document.getElementById('editLoadingImage').value = settingsCache.loading_image_url || '';
                     document.getElementById('editCenterIcon').value = settingsCache.center_icon || '🎯';
@@ -1000,129 +639,84 @@
                     document.getElementById('editIsActive').checked = settingsCache.is_active === 'true';
                     document.getElementById('editDepositRequired').checked = settingsCache.deposit_required === 'true';
                     document.getElementById('editDepositMin').value = settingsCache.deposit_min_amount || 1000;
-                    document.getElementById('editDepositHours').value = settingsCache.deposit_check_hours || 24;
                     return data.settings;
                 }
                 return {};
-            } catch (e) {
-                console.error('Error loading settings:', e);
-                showError('فشل تحميل الإعدادات: ' + e.message);
-                return {};
-            }
+            } catch (e) { console.error('Error loading settings:', e); showError('فشل تحميل الإعدادات: ' + e.message); return {}; }
         }
 
         async function saveSetting(key, value) {
             try {
-                let finalValue = value;
-                if (typeof value === 'boolean') finalValue = value ? 'true' : 'false';
+                let finalValue = typeof value === 'boolean' ? (value ? 'true' : 'false') : String(value);
                 const response = await connectionManager.fetchWithRetry(`${API_BASE}/api/admin/setting`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ admin_id: ADMIN_ID, key: key, value: String(finalValue) })
+                    body: JSON.stringify({ admin_id: ADMIN_ID, key: key, value: finalValue })
                 });
                 const data = await response.json();
                 if (!response.ok) throw new Error(data.error || 'فشل الحفظ');
                 return data.success === true;
-            } catch (e) {
-                console.error('Error saving setting:', e);
-                showError('فشل حفظ الإعداد: ' + e.message);
-                return false;
-            }
+            } catch (e) { console.error('Error saving setting:', e); showError('فشل حفظ الإعداد: ' + e.message); return false; }
         }
 
         async function loadAdminPrizes() {
             try {
                 const res = await connectionManager.fetchWithRetry(`${API_BASE}/api/admin/prizes?admin_id=${ADMIN_ID}`);
                 const data = await res.json();
-                if (data.success) return data.prizes || [];
-                return [];
-            } catch (e) {
-                console.error('Error loading admin prizes:', e);
-                showError('فشل تحميل الجوائز: ' + e.message);
-                return [];
-            }
+                return data.success ? (data.prizes || []) : [];
+            } catch (e) { console.error('Error loading admin prizes:', e); showError('فشل تحميل الجوائز: ' + e.message); return []; }
         }
 
         async function loadPublicPrizes() {
             try {
                 const res = await connectionManager.fetchWithRetry(`${API_BASE}/api/prizes`);
                 const data = await res.json();
-                if (data.success) return data.prizes || [];
-                return [];
-            } catch (e) {
-                console.error('Error loading public prizes:', e);
-                return [];
-            }
+                return data.success ? (data.prizes || []) : [];
+            } catch (e) { console.error('Error loading public prizes:', e); return []; }
         }
 
         async function updatePrize(prizeId, data) {
             try {
                 const response = await connectionManager.fetchWithRetry(`${API_BASE}/api/admin/prizes/${prizeId}`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
+                    method: 'PUT', headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ admin_id: ADMIN_ID, ...data })
                 });
                 const result = await response.json();
-                if (!response.ok) throw new Error(result.error || 'فشل التحديث');
                 return result.success === true;
-            } catch (e) {
-                console.error('Error updating prize:', e);
-                showError('❌ فشل تحديث الجائزة: ' + e.message);
-                return false;
-            }
+            } catch (e) { console.error('Error updating prize:', e); showError('❌ فشل تحديث الجائزة'); return false; }
         }
 
         async function deletePrize(prizeId) {
             try {
                 const response = await connectionManager.fetchWithRetry(`${API_BASE}/api/admin/prizes/${prizeId}`, {
-                    method: 'DELETE',
-                    headers: { 'Content-Type': 'application/json' },
+                    method: 'DELETE', headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ admin_id: ADMIN_ID })
                 });
                 const data = await response.json();
-                if (!response.ok) throw new Error(data.error || 'فشل الحذف');
                 return data.success === true;
-            } catch (e) {
-                console.error('Error deleting prize:', e);
-                showError('❌ فشل حذف الجائزة: ' + e.message);
-                return false;
-            }
+            } catch (e) { console.error('Error deleting prize:', e); showError('❌ فشل حذف الجائزة'); return false; }
         }
 
         async function addPrize(name, icon, description, probability, color, color2) {
             try {
                 const response = await connectionManager.fetchWithRetry(`${API_BASE}/api/admin/prizes`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        admin_id: ADMIN_ID, name: name, icon: icon || '🎁', description: description || '',
-                        probability: parseFloat(probability) || 10, color: color || '#1a1a2e', color2: color2 || '#16213e'
-                    })
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ admin_id: ADMIN_ID, name, icon: icon || '🎁', description: description || '', probability: parseFloat(probability) || 10, color: color || '#1a1a2e', color2: color2 || '#16213e' })
                 });
                 const data = await response.json();
-                if (!response.ok) throw new Error(data.error || 'فشل الإضافة');
                 return data.success === true;
-            } catch (e) {
-                console.error('Error adding prize:', e);
-                showError('❌ فشل إضافة الجائزة: ' + e.message);
-                return false;
-            }
+            } catch (e) { console.error('Error adding prize:', e); showError('❌ فشل إضافة الجائزة'); return false; }
         }
 
         async function resetPrizes() {
             try {
                 const res = await connectionManager.fetchWithRetry(`${API_BASE}/api/admin/seed-prizes`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ admin_id: ADMIN_ID })
                 });
                 const data = await res.json();
                 return data.success;
-            } catch (e) {
-                console.error('Error resetting prizes:', e);
-                showError('❌ فشل إعادة التعيين: ' + e.message);
-                return false;
-            }
+            } catch (e) { console.error('Error resetting prizes:', e); showError('❌ فشل إعادة التعيين'); return false; }
         }
 
         // ================================================================
@@ -1131,212 +725,118 @@
         async function renderAdminPanel() {
             const panel = document.getElementById('adminPanel');
             const list = document.getElementById('prizesList');
-            if (USER_ID !== ADMIN_ID) {
-                panel.classList.remove('show');
-                return;
-            }
+            if (USER_ID !== ADMIN_ID) { panel.classList.remove('show'); return; }
             panel.classList.add('show');
             const prizes = await loadAdminPrizes();
             if (!prizes || prizes.length === 0) {
-                list.innerHTML = `<div style="color:#555;font-size:13px;text-align:center;padding:20px;"><div style="font-size:30px;margin-bottom:10px;">📭</div>لا توجد جوائز<br><span style="font-size:11px;color:#444;">أضف جائزة جديدة باستخدام النموذج أدناه</span></div>`;
+                list.innerHTML = `<div style="color:#555;font-size:13px;text-align:center;padding:20px;"><div style="font-size:30px;">📭</div>لا توجد جوائز</div>`;
                 return;
             }
             list.innerHTML = prizes.map((p, index) => `
                         <div class="prize-item" data-id="${p.id}" data-index="${index}">
                             <div class="prize-icon-small">${p.icon || '🎁'}</div>
                             <div class="prize-info">
-                                <div class="name"><input type="text" class="name-input" value="${p.name}" placeholder="اسم الجائزة"></div>
-                                <div class="desc"><input type="text" class="desc-input" value="${p.description || ''}" placeholder="الوصف (يظهر للجمهور)"></div>
+                                <input type="text" class="name-input" value="${p.name}" placeholder="اسم الجائزة">
+                                <input type="text" class="desc-input" value="${p.description || ''}" placeholder="الوصف (يظهر للجمهور)">
                             </div>
                             <div class="prize-prob">
-                                <input type="number" class="prob-input" value="${p.probability}" min="0" max="100" step="0.1">
-                                <span class="prob-label">%</span>
+                                <input type="number" class="prob-input" value="${p.probability}" min="0" max="100" step="0.1"><span class="prob-label">%</span>
                                 <button class="btn-save-prob" data-id="${p.id}">💾</button>
                             </div>
                             <div class="prize-colors">
-                                <input type="color" class="color-input" value="${p.color || '#1a1a2e'}" data-field="color" data-id="${p.id}">
-                                <input type="color" class="color-input" value="${p.color2 || '#16213e'}" data-field="color2" data-id="${p.id}">
+                                <input type="color" class="color-input" value="${p.color || '#1f3050'}" data-field="color" data-id="${p.id}">
+                                <input type="color" class="color-input" value="${p.color2 || '#0a1220'}" data-field="color2" data-id="${p.id}">
                             </div>
                             <button class="btn-delete" data-id="${p.id}">✕</button>
                         </div>
                     `).join('');
-            // Attach events (logic kept same)
+            // Attach Admin Events...
             list.querySelectorAll('.name-input').forEach(input => {
                 input.addEventListener('change', async function() {
-                    const id = parseInt(this.closest('.prize-item').dataset.id);
-                    const success = await updatePrize(id, { name: this.value.trim() });
-                    if (success) { await refreshAll(); showNotification('✅ تم تحديث الاسم'); } else { showError('❌ فشل تحديث الاسم'); }
-                });
-            });
-            list.querySelectorAll('.desc-input').forEach(input => {
-                input.addEventListener('change', async function() {
-                    const id = parseInt(this.closest('.prize-item').dataset.id);
-                    const success = await updatePrize(id, { description: this.value.trim() });
-                    if (success) { await refreshAll(); showNotification('✅ تم تحديث الوصف'); } else { showError('❌ فشل تحديث الوصف'); }
-                });
-            });
-            list.querySelectorAll('.prob-input').forEach(input => {
-                input.addEventListener('change', async function() {
-                    const id = parseInt(this.closest('.prize-item').dataset.id);
-                    if (isNaN(parseFloat(this.value)) || parseFloat(this.value) < 0) this.value = 0;
-                    if (parseFloat(this.value) > 100) this.value = 100;
-                    const success = await updatePrize(id, { probability: parseFloat(this.value) });
-                    if (success) { await refreshAll(); showNotification('✅ تم تحديث النسبة'); } else { showError('❌ فشل تحديث النسبة'); }
+                    if(await updatePrize(parseInt(this.closest('.prize-item').dataset.id), { name: this.value.trim() })) { await refreshAll(); showNotification('✅ تم تحديث الاسم'); }
                 });
             });
             list.querySelectorAll('.btn-save-prob').forEach(btn => {
                 btn.addEventListener('click', async function() {
                     const item = this.closest('.prize-item');
-                    const input = item.querySelector('.prob-input');
-                    if (isNaN(parseFloat(input.value)) || parseFloat(input.value) < 0) input.value = 0;
-                    if (parseFloat(input.value) > 100) input.value = 100;
-                    const success = await updatePrize(parseInt(item.dataset.id), { probability: parseFloat(input.value) });
-                    if (success) { await refreshAll(); showNotification('✅ تم حفظ النسبة'); } else { showError('❌ فشل حفظ النسبة'); }
+                    if(await updatePrize(parseInt(item.dataset.id), { probability: parseFloat(item.querySelector('.prob-input').value) })) { await refreshAll(); showNotification('✅ تم حفظ النسبة'); }
                 });
             });
             list.querySelectorAll('.color-input').forEach(input => {
                 input.addEventListener('change', async function() {
-                    const id = parseInt(this.dataset.id);
-                    const updateData = {}; updateData[this.dataset.field] = this.value;
-                    const success = await updatePrize(id, updateData);
-                    if (success) { await refreshAll(); showNotification('✅ تم تحديث اللون'); } else { showError('❌ فشل تحديث اللون'); }
+                    const id = parseInt(this.dataset.id); const updateData = {}; updateData[this.dataset.field] = this.value;
+                    if(await updatePrize(id, updateData)) { await refreshAll(); showNotification('✅ تم تحديث اللون'); }
                 });
             });
             list.querySelectorAll('.btn-delete').forEach(btn => {
                 btn.addEventListener('click', async function() {
                     const id = parseInt(this.dataset.id);
-                    const name = this.closest('.prize-item').querySelector('.name-input').value || 'هذه الجائزة';
-                    if (confirm(`⚠️ هل أنت متأكد من حذف "${name}"؟`)) {
-                        const success = await deletePrize(id);
-                        if (success) { await refreshAll(); showNotification(`✅ تم حذف "${name}"`); } else { showError('❌ فشل حذف الجائزة'); }
+                    if (confirm('⚠️ هل أنت متأكد من الحذف؟')) {
+                        if(await deletePrize(id)) { await refreshAll(); showNotification('✅ تم الحذف'); }
                     }
                 });
             });
         }
 
-        // ================================================================
-        //                      تحميل الجوائز
-        // ================================================================
         async function loadPrizes() {
             try {
                 const res = await connectionManager.fetchWithRetry(`${API_BASE}/api/prizes`);
                 const data = await res.json();
                 if (data.success && data.prizes && data.prizes.length > 0) {
-                    prizesCache = data.prizes;
-                    return data.prizes;
+                    prizesCache = data.prizes; return data.prizes;
                 }
                 return [];
-            } catch (e) {
-                console.error('Error loading prizes:', e);
-                showError('فشل تحميل الجوائز: ' + e.message);
-                return [];
-            }
+            } catch (e) { console.error('Error loading prizes:', e); showError('فشل تحميل الجوائز'); return []; }
         }
 
-        // ================================================================
-        //                      تحميل حالة المستخدم
-        // ================================================================
         async function loadUserStatus() {
             if (!USER_ID) return;
             try {
                 const res = await connectionManager.fetchWithRetry(`${API_BASE}/api/wheel/history/${USER_ID}`);
                 const data = await res.json();
                 if (data.success) {
-                    const depositNotice = document.getElementById('depositNotice');
-                    const depositStatus = document.getElementById('depositStatus');
-
-                    if (data.deposit_requirement?.required) {
-                        const minAmount = data.deposit_requirement.min_amount || 0;
-                        const checkHours = data.deposit_requirement.check_hours || 24;
-                        const currentDeposits = data.deposit_requirement.current_deposits || 0;
-                        const isMet = data.deposit_requirement.is_met || false;
-
-                        document.getElementById('depositMinAmount').textContent = minAmount;
-                        document.getElementById('depositCheckHours').textContent = checkHours;
-
-                        depositNotice.classList.add('show');
-                        if (isMet) {
-                            depositStatus.innerHTML = `الحالة: <span class="met">✅ مكتمل (${currentDeposits} SYP)</span>`;
-                        } else {
-                            depositStatus.innerHTML = `الحالة: <span class="not-met">❌ غير مكتمل (${currentDeposits}/${minAmount} SYP)</span>`;
-                        }
-                    } else {
-                        depositNotice.classList.remove('show');
-                    }
-
                     const spinBtn = document.getElementById('spinBtn');
-                    const canSpin = data.spin_status?.can_spin !== false &&
-                        (!data.deposit_requirement?.required || data.deposit_requirement?.is_met);
-
+                    const canSpin = data.spin_status?.can_spin !== false;
                     if (canSpin && prizesCache.length > 0) {
-                        spinBtn.disabled = false;
-                        document.getElementById('spinBtnText').textContent = 'دَوِّر العجلة!';
+                        spinBtn.disabled = false; document.getElementById('spinBtnText').textContent = 'دَوِّر العجلة!';
                     } else if (!data.spin_status?.can_spin) {
                         spinBtn.disabled = true;
-                        const h = data.spin_status?.remaining_hours || 0;
-                        const m = data.spin_status?.remaining_minutes || 0;
+                        const h = data.spin_status?.remaining_hours || 0; const m = data.spin_status?.remaining_minutes || 0;
                         document.getElementById('spinBtnText').textContent = `⏳ ${h}h ${m}m`;
-                        soundManager.stopAll();
-                    } else if (data.deposit_requirement?.required && !data.deposit_requirement?.is_met) {
-                        spinBtn.disabled = true;
-                        document.getElementById('spinBtnText').textContent = '💰 إيداع مطلوب';
-                        soundManager.stopAll();
-                    } else {
-                        spinBtn.disabled = true;
-                        document.getElementById('spinBtnText').textContent = '⏳ جاري التحميل...';
                     }
                 }
-            } catch (e) {
-                console.error('Error loading user status:', e);
-                showError('فشل تحميل حالة المستخدم: ' + e.message);
-            }
+            } catch (e) { console.error('Error loading user status:', e); }
         }
 
-        // ================================================================
-        //                      تحديث كل شيء
-        // ================================================================
         async function refreshAll() {
             await loadSettings();
             const prizes = await loadPrizes();
-            drawWheel(prizes, -1, currentRotation);
+            if (prizes.length > 0) {
+                prizesCache = prizes;
+                if (!animationFrameId) startLightLoop();
+                else drawWheel(prizes, -1, currentRotation);
+            }
             await loadUserStatus();
             await renderAdminPanel();
         }
 
         // ================================================================
-        //                      تأثيرات الاحتفال
+        //                      تأثيرات والدوران
         // ================================================================
         function createConfetti(count = 60) {
             const container = document.getElementById('confettiContainer');
             container.innerHTML = '';
-            const colors = ['#FFD700', '#FF6B00', '#FF0000', '#00FF00', '#00BFFF', '#FF00FF', '#FF69B4', '#FF4500', '#7CFC00'];
+            const colors = ['#FFD700', '#FF6B00', '#FF0000', '#00FF00', '#00BFFF', '#FF00FF', '#FF69B4'];
             for (let i = 0; i < count; i++) {
                 const el = document.createElement('div');
                 el.className = 'confetti';
-                const size = 6 + Math.random() * 14;
-                el.style.width = size + 'px';
-                el.style.height = size + 'px';
+                el.style.width = (6 + Math.random() * 14) + 'px'; el.style.height = (6 + Math.random() * 14) + 'px';
                 el.style.background = colors[Math.floor(Math.random() * colors.length)];
-                el.style.left = Math.random() * 100 + '%';
-                el.style.top = Math.random() * 40 + '%';
-                el.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+                el.style.left = Math.random() * 100 + '%'; el.style.top = Math.random() * 40 + '%';
                 el.style.animationDuration = (1.5 + Math.random() * 1.5) + 's';
-                el.style.animationDelay = Math.random() * 0.8 + 's';
                 container.appendChild(el);
             }
             setTimeout(() => { container.innerHTML = ''; }, 3500);
-        }
-
-        function createWinEffects(prizeName) {
-            const resultBox = document.getElementById('resultBox');
-            resultBox.classList.add('winner');
-            createConfetti(60);
-            showNotification(`🎉 مبروك! لقد فزت بـ ${prizeName}!`);
-        }
-
-        function clearWinEffects() {
-            const resultBox = document.getElementById('resultBox');
-            resultBox.classList.remove('winner');
         }
 
         function showNotification(message) {
@@ -1346,311 +846,139 @@
             setTimeout(() => { bar.classList.remove('show'); }, 4000);
         }
 
-        // ================================================================
-        //                      شاشة اللودينغ
-        // ================================================================
-        function updateLoading(progress) {
-            const bar = document.getElementById('loaderProgressBar');
-            const text = document.getElementById('loaderStatusText');
-            bar.style.width = progress + '%';
-            text.textContent = progress + '%';
+        function showError(msg) {
+            const el = document.getElementById('errorMsg');
+            document.getElementById('errorText').textContent = '❌ ' + msg;
+            el.classList.add('show'); setTimeout(() => el.classList.remove('show'), 5000);
         }
 
         function showLoading(show) {
             const screen = document.getElementById('loadingScreen');
             const wrapper = document.getElementById('wheelWrapper');
-            if (show) {
-                screen.classList.add('active');
-                wrapper.classList.remove('show');
-            } else {
-                screen.classList.remove('active');
-                wrapper.classList.add('show');
-            }
+            if (show) { screen.classList.add('active'); wrapper.classList.remove('show'); } 
+            else { screen.classList.remove('active'); wrapper.classList.add('show'); }
+        }
+
+        function updateLoading(progress) {
+            document.getElementById('loaderProgressBar').style.width = progress + '%';
+            document.getElementById('loaderStatusText').textContent = progress + '%';
         }
 
         // ================================================================
-        //                      التحقق من الاتصال مع إعادة المحاولة
-        // ================================================================
-        async function checkConnection() {
-            try {
-                await connectionManager.fetchWithRetry(`${API_BASE}/api/status`);
-                return true;
-            } catch (e) {
-                console.error('Connection failed:', e);
-                return false;
-            }
-        }
-
-        // ================================================================
-        //                      تدوير العجلة
+        //                      تدوير العجلة (Motion Logic)
         // ================================================================
         async function spinWheel() {
-            if (isSpinning || !USER_ID) return;
-            if (document.getElementById('spinBtn').disabled) return;
-            if (prizesCache.length === 0) {
-                showError('لا توجد جوائز متاحة');
-                return;
-            }
+            if (isSpinning || !USER_ID || document.getElementById('spinBtn').disabled || prizesCache.length === 0) return;
 
             isSpinning = true;
             const spinBtn = document.getElementById('spinBtn');
-            spinBtn.disabled = true;
-            spinBtn.classList.add('loading');
+            spinBtn.disabled = true; spinBtn.classList.add('loading');
             document.getElementById('spinBtnText').textContent = 'جاري التدوير...';
+            document.getElementById('resultBox').classList.remove('show'); document.getElementById('errorMsg').classList.remove('show');
 
-            document.getElementById('resultBox').classList.remove('show');
-            document.getElementById('errorMsg').classList.remove('show');
-            clearWinEffects();
-
-            soundManager.init();
-            soundManager.playStartSound();
-            soundManager.playSpinSound();
+            soundManager.init(); soundManager.playStartSound(); soundManager.playSpinSound();
 
             try {
                 const response = await connectionManager.fetchWithRetry(`${API_BASE}/api/wheel/spin`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ user_id: USER_ID })
                 });
-
                 const data = await response.json();
                 spinBtn.classList.remove('loading');
 
                 if (data.success) {
                     const prize = data.spin.prize;
                     const step = (2 * Math.PI) / prizesCache.length;
-
                     const prizeIndex = prizesCache.findIndex(p => p.id === prize.id);
                     const isWin = !prize.name.includes('حظ سعيد');
+                    const idx = prizeIndex > -1 ? prizeIndex : Math.floor(Math.random() * prizesCache.length);
 
-                    if (prizeIndex === -1) {
-                        const randomIndex = Math.floor(Math.random() * prizesCache.length);
-                        const targetAngle = (randomIndex / prizesCache.length) * 2 * Math.PI;
-                        const totalRotation = currentRotation + (4 * 2 * Math.PI) + (2 * Math.PI - targetAngle - (step / 2));
+                    // حساب الزاوية للوصول للجائزة الصحيحة
+                    const targetAngle = (idx / prizesCache.length) * 2 * Math.PI;
+                    // 5 لفات كاملة + الوصول للقطاع + قلب الاتجاه للوصول من الأعلى (السهم)
+                    const totalRotation = currentRotation + (5 * 2 * Math.PI) + (2 * Math.PI - targetAngle - (step/2));
 
-                        animateSpin(totalRotation, spinDuration, () => {
-                            drawWheel(prizesCache, randomIndex, totalRotation);
-                            showResult(prizesCache[randomIndex], isWin);
-                        });
-                    } else {
-                        const targetAngle = (prizeIndex / prizesCache.length) * 2 * Math.PI;
-                        const totalRotation = currentRotation + (4 * 2 * Math.PI) + (2 * Math.PI - targetAngle - (step / 2));
+                    // إيقاف حلقة الأضواء أثناء الدوران لتوفير الأداء
+                    if (animationFrameId) { cancelAnimationFrame(animationFrameId); animationFrameId = null; }
 
-                        animateSpin(totalRotation, spinDuration, () => {
-                            drawWheel(prizesCache, prizeIndex, totalRotation);
-                            showResult(prize, isWin);
-                        });
+                    const duration = spinDuration;
+                    const startRotation = currentRotation;
+                    const startTime = performance.now();
+
+                    function animateSpin(time) {
+                        const elapsed = time - startTime;
+                        const progress = Math.min(elapsed / duration, 1);
+                        const easedProgress = 1 - Math.pow(1 - progress, 3);
+                        const currentAngle = startRotation + (totalRotation - startRotation) * easedProgress;
+                        currentRotation = currentAngle;
+                        
+                        // رسم سريع للدوران دون الأضواء المتحركة
+                        drawWheel(prizesCache, -1, currentAngle);
+
+                        if (progress < 1) {
+                            requestAnimationFrame(animateSpin);
+                        } else {
+                            currentRotation = totalRotation;
+                            // إعادة تشغيل الأضواء
+                            startLightLoop(); 
+                            drawWheel(prizesCache, idx, totalRotation);
+                            
+                            // إظهار النتيجة
+                            document.getElementById('prizeDesc').textContent = prize.description || prize.name || 'جائزة!';
+                            document.getElementById('resultBox').classList.add('show');
+                            soundManager.stopAll();
+
+                            if (isWin) {
+                                createConfetti(60);
+                                soundManager.playWinSound();
+                            } else {
+                                soundManager.playLoseSound();
+                            }
+                            loadUserStatus();
+                        }
                     }
-
+                    requestAnimationFrame(animateSpin);
                 } else {
                     showError(data.error || 'حدث خطأ');
-                    if (data.remaining_hours !== undefined) {
-                        const btn = document.getElementById('spinBtn');
-                        btn.disabled = true;
-                        document.getElementById('spinBtnText').textContent = `⏳ ${data.remaining_hours}h ${data.remaining_minutes}m`;
-                        soundManager.stopAll();
-                    }
                     drawWheel(prizesCache, -1, currentRotation);
+                    soundManager.stopAll();
                 }
-
             } catch (e) {
                 spinBtn.classList.remove('loading');
                 showError('خطأ في الاتصال: ' + e.message);
                 drawWheel(prizesCache, -1, currentRotation);
                 soundManager.stopAll();
             }
-
             isSpinning = false;
-            if (!document.getElementById('spinBtn').disabled) {
-                document.getElementById('spinBtnText').textContent = 'دَوِّر العجلة!';
-            }
+            if (!document.getElementById('spinBtn').disabled) document.getElementById('spinBtnText').textContent = 'دَوِّر العجلة!';
         }
-
-        // ================================================================
-        //                      عرض النتيجة
-        // ================================================================
-        function showResult(prize, isWin) {
-            document.getElementById('prizeDesc').textContent = prize.description || prize.name || 'جائزة!';
-            document.getElementById('resultBox').classList.add('show');
-
-            soundManager.stopAll();
-
-            if (isWin) {
-                createWinEffects(prize.description || prize.name);
-                soundManager.playWinSound();
-            } else {
-                soundManager.playLoseSound();
-            }
-
-            loadUserStatus();
-        }
-
-        // ================================================================
-        //                      عرض الخطأ
-        // ================================================================
-        function showError(msg) {
-            const el = document.getElementById('errorMsg');
-            document.getElementById('errorText').textContent = '❌ ' + msg;
-            el.classList.add('show');
-            setTimeout(() => el.classList.remove('show'), 5000);
-        }
-
-        // ================================================================
-        //                      أحداث الإدارة
-        // ================================================================
-        document.querySelectorAll('.btn-save').forEach(btn => {
-            btn.addEventListener('click', async function() {
-                const key = this.dataset.setting;
-                const fieldId = this.dataset.field;
-                const type = this.dataset.type || 'text';
-                let value = '';
-                if (type === 'checkbox') value = document.getElementById(fieldId).checked;
-                else value = document.getElementById(fieldId).value;
-                const originalText = this.textContent;
-                this.textContent = '⏳ جاري...';
-                this.disabled = true;
-                const success = await saveSetting(key, value);
-                if (success) {
-                    this.textContent = '✅ تم الحفظ';
-                    this.classList.add('saved');
-                    await refreshAll();
-                    setTimeout(() => {
-                        this.textContent = originalText;
-                        this.classList.remove('saved');
-                        this.disabled = false;
-                    }, 2000);
-                } else {
-                    this.textContent = '❌ فشل';
-                    setTimeout(() => {
-                        this.textContent = originalText;
-                        this.disabled = false;
-                    }, 2000);
-                }
-            });
-        });
-
-        document.getElementById('addPrizeBtn').addEventListener('click', async function() {
-            const nameInput = document.getElementById('newPrizeName');
-            const iconInput = document.getElementById('newPrizeIcon');
-            const descInput = document.getElementById('newPrizeDesc');
-            const probInput = document.getElementById('newPrizeProb');
-            const colorInput = document.getElementById('newPrizeColor');
-            const color2Input = document.getElementById('newPrizeColor2');
-
-            const name = nameInput.value.trim();
-            const icon = iconInput.value.trim() || '🎁';
-            const description = descInput.value.trim() || '';
-            const prob = parseFloat(probInput.value) || 10;
-            const color = colorInput.value || '#1a1a2e';
-            const color2 = color2Input.value || '#16213e';
-
-            if (!name) { showError('⚠️ الرجاء إدخال اسم الجائزة'); nameInput.focus(); return; }
-            if (prob < 0 || prob > 100) { showError('⚠️ النسبة يجب أن تكون بين 0 و 100'); probInput.focus(); return; }
-
-            const btn = this;
-            btn.disabled = true;
-            btn.textContent = '⏳';
-
-            const success = await addPrize(name, icon, description, prob, color, color2);
-            if (success) {
-                nameInput.value = ''; iconInput.value = ''; descInput.value = ''; probInput.value = '';
-                await refreshAll();
-                showNotification(`✅ تم إضافة "${name}" بنجاح`);
-            } else { showError('❌ فشل إضافة الجائزة'); }
-            btn.disabled = false;
-            btn.textContent = '➕';
-        });
-
-        document.getElementById('refreshPrizesBtn').addEventListener('click', async function() {
-            await refreshAll();
-            showNotification('🔄 تم تحديث الكل');
-        });
-
-        document.getElementById('resetPrizesBtn').addEventListener('click', async function() {
-            if (confirm('⚠️ هل أنت متأكد من إعادة تعيين جميع الجوائز إلى الإعدادات الافتراضية؟')) {
-                const success = await resetPrizes();
-                if (success) { await refreshAll(); showNotification('✅ تم إعادة تعيين الجوائز'); } 
-                else { showError('❌ فشل إعادة التعيين'); }
-            }
-        });
-
-        document.getElementById('soundToggle').addEventListener('change', function() {
-            soundEnabled = this.checked;
-            if (!soundEnabled) soundManager.stopAll();
-            else soundManager.init();
-        });
 
         // ================================================================
         //                      التهيئة
         // ================================================================
         async function init() {
             USER_ID = getUserId();
-
-            if (!USER_ID) {
-                document.getElementById('errorContainer').classList.add('show');
-                return;
-            }
+            if (!USER_ID) { document.getElementById('errorContainer').classList.add('show'); return; }
 
             showLoading(true);
-            updateLoading(0);
-
             try {
-                let progress = 0;
-                const interval = setInterval(() => {
-                    progress += Math.random() * 12;
-                    if (progress > 85) progress = 85;
-                    updateLoading(Math.round(progress));
-                }, 150);
-
-                const isConnected = await checkConnection();
-                if (!isConnected) {
-                    clearInterval(interval);
-                    updateLoading(100);
-                    await new Promise(r => setTimeout(r, 400));
-                    showLoading(false);
-                    showError('⚠️ لا يمكن الاتصال بالخادم. تأكد من اتصالك بالإنترنت.');
-                    return;
-                }
-
-                updateLoading(30);
-                await new Promise(r => setTimeout(r, 300));
-
-                await loadSettings();
-                updateLoading(50);
-                await new Promise(r => setTimeout(r, 300));
-
-                const prizes = await loadPrizes();
-                drawWheel(prizes, -1, 0);
-                updateLoading(70);
-                await new Promise(r => setTimeout(r, 300));
-
-                await loadUserStatus();
-                updateLoading(85);
-                await new Promise(r => setTimeout(r, 300));
-
-                await renderAdminPanel();
-                updateLoading(95);
-                await new Promise(r => setTimeout(r, 300));
-
-                clearInterval(interval);
-                updateLoading(100);
                 await new Promise(r => setTimeout(r, 500));
-
+                await loadSettings();
+                const prizes = await loadPrizes();
+                if (prizes.length > 0) {
+                    prizesCache = prizes;
+                    drawWheel(prizes, -1, 0);
+                    startLightLoop(); // بدء دوران الأضواء
+                }
+                await loadUserStatus();
+                await renderAdminPanel();
                 soundManager.init();
-
-            } catch (e) {
-                console.error('Init error:', e);
-                updateLoading(100);
-                await new Promise(r => setTimeout(r, 600));
-                showError('⚠️ فشل تحميل البيانات: ' + e.message);
-            }
-
+            } catch (e) { console.error('Init error:', e); showError('⚠️ فشل تحميل البيانات'); }
             showLoading(false);
             document.getElementById('spinBtn').onclick = spinWheel;
         }
 
         document.addEventListener('DOMContentLoaded', init);
     </script>
-
 </body>
 </html>
