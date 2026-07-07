@@ -6,7 +6,6 @@
     <title>IChancy Pro</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        /* التنسيق العام والخلفية الاحترافية */
         :root {
             --bg-dark: #0b0e17;
             --gold-main: #ffd700;
@@ -21,14 +20,20 @@
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             display: flex; flex-direction: column; align-items: center;
             overflow-x: hidden; user-select: none;
-            padding: 15px 10px;
+            padding: 15px 10px 30px 10px;
         }
 
-        /* الخلفية نجمة داكنة لامعة */
+        /* الخلفية الديناميكية */
         .bg-layer {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             z-index: -1;
             background: radial-gradient(circle at 50% 30%, #1f1d35 0%, #05050c 100%);
+            background-size: cover;
+            background-position: center;
+        }
+        .bg-layer img {
+            display: none;
+            width: 100%; height: 100%; object-fit: cover;
         }
 
         /* === النصوص العلوية === */
@@ -58,7 +63,7 @@
         .wheel-container {
             position: relative; width: 100%; height: 100%;
             border-radius: 50%;
-            padding: 8px; /* فراغ للإطار والنيون */
+            padding: 8px;
             box-shadow: 0 0 60px rgba(255, 215, 0, 0.03);
         }
 
@@ -111,7 +116,6 @@
         .btn-spin .icon { font-size: 20px; }
         .btn-spin .timer-text { font-size: 17px; color: #4a3b1a; }
 
-        /* اللودر الخاص بالزر */
         .loader-ring { display: none; width: 20px; height: 20px; border: 3px solid rgba(0,0,0,0.1); border-top: 3px solid #000; border-radius: 50%; animation: spin 0.8s linear infinite; }
         .btn-spin.loading .loader-ring { display: inline-block; }
         .btn-spin.loading .btn-text { display: none; }
@@ -161,25 +165,60 @@
         .status-msg.success { border-color: #00ff88; color: #00ff88; }
         .status-msg.error { border-color: #ff4444; color: #ff6b6b; }
 
-        /* === لوحة الإدارة (Admin) === */
+        /* =========================================================
+           لوحة الإدارة الكاملة (Admin Panel Complete)
+           ========================================================= */
         .admin-panel {
-            display: none; width: 100%; max-width: 420px; margin-top: 20px;
-            background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 20px; padding: 15px; z-index: 10; position: relative;
+            display: none; width: 100%; max-width: 480px; margin-top: 25px;
+            background: rgba(20, 22, 32, 0.85); backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 215, 0, 0.15);
+            border-radius: 24px; padding: 20px; z-index: 10; position: relative;
         }
         .admin-panel.visible { display: block; animation: popIn 0.5s ease; }
-        .admin-panel h3 { color: #ffd700; font-size: 14px; margin-bottom: 10px; display: flex; gap: 10px; align-items: center; }
-        .admin-panel .p-item { display: flex; gap: 8px; padding: 6px 10px; margin-bottom: 5px; background: rgba(255,255,255,0.02); border-radius: 8px; align-items: center; flex-wrap: wrap;}
-        .admin-panel .p-item input { background: #111; border: 1px solid #333; color: #fff; padding: 4px 6px; border-radius: 4px; font-size: 12px; flex: 1; min-width: 40px;}
-        .admin-panel .p-item input:focus { border-color: #ffd700; outline: none; }
-        .admin-panel .p-item button { background: #f55; border: none; color: #fff; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 11px;}
-        .admin-panel .add-form { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 10px; }
-        .admin-panel .add-form input { flex: 1; min-width: 40px; background: #111; border: 1px solid #333; padding: 6px; border-radius: 4px; color: #fff; font-size: 12px; }
-        .admin-panel .add-form button { background: #ffd700; border: none; padding: 6px 12px; border-radius: 4px; font-weight: bold; cursor: pointer; color: #000; }
+        
+        .admin-panel h3 { color: #ffd700; font-size: 18px; margin-bottom: 15px; display: flex; gap: 10px; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 10px; }
+        
+        /* قسم الجوائز */
+        .ap-section-title { color: #888; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin: 15px 0 10px 0; }
+        
+        .ap-item {
+            display: grid; grid-template-columns: 30px 1fr 60px 30px 30px 30px;
+            gap: 8px; padding: 8px 10px; margin-bottom: 6px;
+            background: rgba(255,255,255,0.03); border-radius: 8px;
+            align-items: center; border: 1px solid rgba(255,255,255,0.03);
+        }
+        .ap-item input, .ap-item input[type="color"] {
+            background: #15171f; border: 1px solid #2a2e3d; color: #fff; padding: 4px 6px; border-radius: 4px; font-size: 12px; width: 100%; height: 24px;
+        }
+        .ap-item input:focus { border-color: #ffd700; outline: none; }
+        .ap-item input[type="color"] { padding: 2px; width: 100%; }
+        .ap-item .ap-del { background: #f55; border: none; color: #fff; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: bold; height: 24px; width: 100%;}
+        .ap-item .ap-save { background: #ffd700; border: none; color: #000; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: bold; height: 24px; width: 100%;}
+
+        /* نموذج الإضافة */
+        .ap-add-form { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; background: rgba(255,255,255,0.02); padding: 10px; border-radius: 8px; }
+        .ap-add-form input { flex: 1; min-width: 40px; background: #15171f; border: 1px solid #2a2e3d; padding: 6px; border-radius: 4px; color: #fff; font-size: 12px; }
+        .ap-add-form input[type="color"] { padding: 2px; flex: 0 0 30px; }
+        .ap-add-form button { background: #ffd700; border: none; padding: 6px 15px; border-radius: 4px; font-weight: bold; cursor: pointer; color: #000; }
+
+        /* قسم الإعدادات العامة */
+        .ap-settings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
+        .ap-setting-item { display: flex; flex-direction: column; gap: 4px; }
+        .ap-setting-item label { color: #888; font-size: 11px; }
+        .ap-setting-item input, .ap-setting-item textarea { background: #15171f; border: 1px solid #2a2e3d; color: #fff; padding: 6px; border-radius: 4px; font-size: 12px; width: 100%; }
+        .ap-setting-item input:focus, .ap-setting-item textarea:focus { border-color: #ffd700; outline: none; }
+        .ap-setting-item button { background: #2a2e3d; border: none; color: #fff; padding: 4px; border-radius: 4px; cursor: pointer; font-size: 11px; margin-top: 4px; transition: 0.2s; }
+        .ap-setting-item button:hover { background: #ffd700; color: #000; }
+
+        .ap-checkbox { display: flex; align-items: center; gap: 6px; color: #888; font-size: 12px; margin-top: 4px; }
+        .ap-checkbox input { width: 16px; height: 16px; accent-color: #ffd700; }
+
     </style>
 </head>
 <body>
-    <div class="bg-layer"></div>
+    <div class="bg-layer" id="bgLayer">
+        <img id="bgImage" src="https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=1920&q=80" alt="Background">
+    </div>
 
     <div class="loading-screen" id="loadingScreen">
         <div class="custom-spinner"></div>
@@ -217,14 +256,58 @@
         <div class="p-desc" id="resultDesc">وصف الجائزة</div>
     </div>
 
+    <!-- =========================================================
+         لوحة الإدارة الكاملة
+         ========================================================= -->
     <div class="admin-panel" id="adminPanel">
-        <h3>⚙️ لوحة التحكم</h3>
+        <h3>⚙️ لوحة التحكم المتقدمة</h3>
+
+        <div class="ap-section-title">الجوائز الحالية</div>
         <div id="adminPrizesList"></div>
-        <div class="add-form">
+
+        <div class="ap-section-title">إضافة جائزة جديدة</div>
+        <div class="ap-add-form">
             <input type="text" id="newName" placeholder="الاسم">
             <input type="text" id="newIcon" placeholder="أيقونة" style="max-width:50px;">
-            <input type="number" id="newProb" placeholder="%" style="max-width:50px;">
-            <button id="addPrizeBtn">إضافة</button>
+            <input type="number" id="newProb" placeholder="نسبة %" style="max-width:60px;">
+            <input type="color" id="newColor" value="#1f2b4a">
+            <input type="color" id="newColor2" value="#0f142b">
+            <button id="addPrizeBtn">➕ إضافة</button>
+        </div>
+
+        <div class="ap-section-title" style="margin-top:20px;">الإعدادات العامة</div>
+        <div class="ap-settings-grid">
+            <div class="ap-setting-item">
+                <label>رابط صورة الخلفية</label>
+                <input type="text" id="s_bg" placeholder="https://...">
+                <button onclick="saveSetting('bg_image_url', 's_bg')">حفظ الخلفية</button>
+            </div>
+            <div class="ap-setting-item">
+                <label>صورة اللودينغ</label>
+                <input type="text" id="s_load" placeholder="https://...">
+                <button onclick="saveSetting('loading_image_url', 's_load')">حفظ الصورة</button>
+            </div>
+            <div class="ap-setting-item">
+                <label>أيقونة مركز العجلة</label>
+                <input type="text" id="s_center" placeholder="🎯" style="max-width:80px;">
+                <button onclick="saveSetting('center_icon', 's_center')">حفظ الأيقونة</button>
+            </div>
+            <div class="ap-setting-item">
+                <label>مدة التدوير (مللي ثانية)</label>
+                <input type="number" id="s_dur" placeholder="4500" style="max-width:100px;">
+                <button onclick="saveSetting('spin_duration', 's_dur')">حفظ المدة</button>
+            </div>
+            <div class="ap-setting-item">
+                <label>فترة التبريد (ساعة)</label>
+                <input type="number" id="s_int" placeholder="24" style="max-width:100px;">
+                <button onclick="saveSetting('spin_interval_hours', 's_int')">حفظ التبريد</button>
+            </div>
+            <div class="ap-setting-item" style="justify-content:center;">
+                <div class="ap-checkbox">
+                    <input type="checkbox" id="s_active"> تفعيل العجلة
+                    <button onclick="saveSetting('is_active', 's_active', true)" style="margin:0; padding:2px 10px; background:#ffd700; color:#000;">حفظ</button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -248,7 +331,7 @@
         };
 
         // ================================================================
-        // 2. نظام الاتصال المتقدم (مع إعادة المحاولة و Timeout)
+        // 2. نظام الاتصال المتقدم
         // ================================================================
         const APIManager = {
             async call(endpoint, options = {}) {
@@ -256,7 +339,7 @@
                 while (attempts < 3) {
                     try {
                         const controller = new AbortController();
-                        const timeout = setTimeout(() => controller.abort(), 15000); // 15 ثانية مهلة
+                        const timeout = setTimeout(() => controller.abort(), 15000);
 
                         const res = await fetch(`${CONFIG.API}${endpoint}`, {
                             ...options,
@@ -280,7 +363,7 @@
         };
 
         // ================================================================
-        // 3. المحرك البصري (Canvas + أضواء النيون الدوارة)
+        // 3. المحرك البصري
         // ================================================================
         const canvas = document.getElementById('wheelCanvas');
         const ctx = canvas.getContext('2d');
@@ -299,7 +382,7 @@
         function renderWheel(highlightIdx = -1, forcedRot = null) {
             const w = canvas.width, h = canvas.height;
             const cx = w/2, cy = h/2;
-            const r = Math.min(w, h)/2 - 20; // مساحة للأضواء
+            const r = Math.min(w, h)/2 - 20;
             const total = AppState.prizes.length;
             if (total === 0) return;
 
@@ -307,7 +390,6 @@
             const rot = forcedRot !== null ? forcedRot : AppState.rotation;
             ctx.clearRect(0, 0, w, h);
 
-            // 1. رسم القطاعات
             AppState.prizes.forEach((p, i) => {
                 const start = i * step + rot - Math.PI/2;
                 const end = start + step;
@@ -315,8 +397,8 @@
 
                 ctx.beginPath(); ctx.moveTo(cx, cy); ctx.arc(cx, cy, r, start, end); ctx.closePath();
                 
-                const c1 = hl ? '#fdc830' : (i % 2 === 0 ? '#1f2b4a' : '#f0e6c8');
-                const c2 = hl ? '#f37335' : (i % 2 === 0 ? '#0f142b' : '#cabb9b');
+                const c1 = hl ? '#fdc830' : (p.color || (i % 2 === 0 ? '#1f2b4a' : '#f0e6c8'));
+                const c2 = hl ? '#f37335' : (p.color2 || (i % 2 === 0 ? '#0f142b' : '#cabb9b'));
                 
                 const grad = ctx.createRadialGradient(cx - r*0.2, cy - r*0.2, 0, cx, cy, r);
                 grad.addColorStop(0, c1); grad.addColorStop(1, c2);
@@ -325,7 +407,6 @@
                 ctx.strokeStyle = hl ? '#ffffff' : 'rgba(255,215,0,0.3)';
                 ctx.lineWidth = hl ? 3 : 1.5; ctx.stroke();
 
-                // النص
                 const mid = start + step/2;
                 const tx = cx + Math.cos(mid) * (r * 0.6);
                 const ty = cy + Math.sin(mid) * (r * 0.6);
@@ -342,27 +423,24 @@
                 ctx.restore();
             });
 
-            // 2. إطار العجلة (Dark Metal)
+            // 2. إطار العجلة
             ctx.beginPath(); ctx.arc(cx, cy, r + 5, 0, 2*Math.PI);
             ctx.strokeStyle = '#111'; ctx.lineWidth = 12; ctx.stroke();
             ctx.beginPath(); ctx.arc(cx, cy, r + 11, 0, 2*Math.PI);
             ctx.strokeStyle = '#332b1a'; ctx.lineWidth = 6; ctx.stroke();
 
-            // 3. أضواء النيون الذهبية المتدفقة (Chase Light Logic)
-            const ledCount = 24; // 24 نقطة ضوئية
+            // 3. أضواء النيون المتدفقة
+            const ledCount = 24;
             const ledRadius = r + 8;
             for (let i = 0; i < ledCount; i++) {
                 const angle = (i / ledCount) * 2 * Math.PI - Math.PI/2;
                 const lx = cx + Math.cos(angle) * ledRadius;
                 const ly = cy + Math.sin(angle) * ledRadius;
                 
-                // خوارزمية "الضوء الجاري" مع ذيل ضوئي
                 let dist = (i - Math.floor(neonOffset) % ledCount + ledCount) % ledCount;
                 let intensity = 0;
                 
-                if (dist < 6) {
-                    intensity = 1 - (dist / 6); // من 1 إلى 0 تدريجياً
-                }
+                if (dist < 6) intensity = 1 - (dist / 6);
                 
                 ctx.beginPath(); ctx.arc(lx, ly, intensity > 0.8 ? 8 : 5, 0, 2*Math.PI);
                 if (intensity > 0) {
@@ -376,10 +454,9 @@
                 ctx.fill();
             }
 
-            // تحديث مؤشر النيون (يتحرك دائماً حتى لو العجلة واقفة)
             neonOffset = (neonOffset + 0.4) % ledCount;
 
-            // 4. المركز المعدني
+            // 4. المركز
             const cR = r * 0.18;
             const cGrad = ctx.createRadialGradient(cx-4, cy-6, 0, cx, cy, cR);
             cGrad.addColorStop(0, '#fff5d1'); cGrad.addColorStop(0.6, '#d4af37'); cGrad.addColorStop(1, '#8a6914');
@@ -402,7 +479,7 @@
         }
 
         // ================================================================
-        // 4. نظام التدوير السلس
+        // 4. نظام التدوير
         // ================================================================
         async function spinAction() {
             if (AppState.isSpinning || !AppState.canSpin) return;
@@ -412,7 +489,6 @@
             btn.disabled = true; btn.classList.add('loading');
             document.getElementById('resultPanel').classList.remove('show');
 
-            // إيقاف التحديث لتوفير الموارد أثناء الدوران الحاد
             if (animFrame) cancelAnimationFrame(animFrame);
 
             try {
@@ -426,7 +502,6 @@
                     const idx = AppState.prizes.findIndex(p => p.id === prize.id);
                     const targetIdx = idx > -1 ? idx : Math.floor(Math.random() * AppState.prizes.length);
                     
-                    // حساب نقطة التوقف
                     const targetAngle = (targetIdx / AppState.prizes.length) * 2 * Math.PI;
                     const totalRot = AppState.rotation + (7 * 2 * Math.PI) + (2 * Math.PI - targetAngle - ((2*Math.PI)/AppState.prizes.length/2));
 
@@ -447,7 +522,6 @@
                             AppState.isSpinning = false;
                             btn.classList.remove('loading');
                             
-                            // عرض النتيجة
                             renderWheel(targetIdx, totalRot);
                             const isWin = !prize.name.includes('حظ');
                             const panel = document.getElementById('resultPanel');
@@ -456,8 +530,8 @@
                             panel.classList.add('show');
                             if (isWin) panel.classList.add('winner'); else panel.classList.remove('winner');
                             
-                            startLoop(); // إعادة تشغيل النيون
-                            loadUserStatus(); // تحديث حالة التبريد
+                            startLoop();
+                            loadUserStatus();
                         }
                     }
                     requestAnimationFrame(doSpin);
@@ -494,7 +568,21 @@
         async function loadSettings() {
             try {
                 const data = await APIManager.call(`/api/admin/settings?admin_id=${CONFIG.ADMIN_ID}`);
-                if (data.success) AppState.settings = data.settings || {};
+                if (data.success) {
+                    AppState.settings = data.settings || {};
+                    // تحديث قيم الإعدادات في لوحة التحكم
+                    document.getElementById('s_bg').value = AppState.settings.bg_image_url || '';
+                    document.getElementById('s_load').value = AppState.settings.loading_image_url || '';
+                    document.getElementById('s_center').value = AppState.settings.center_icon || '🎯';
+                    document.getElementById('s_dur').value = AppState.settings.spin_duration || 4500;
+                    document.getElementById('s_int').value = AppState.settings.spin_interval_hours || 24;
+                    document.getElementById('s_active').checked = AppState.settings.is_active === 'true';
+                    
+                    // تحديث الخلفية
+                    if (AppState.settings.bg_image_url) {
+                        document.getElementById('bgImage').src = AppState.settings.bg_image_url;
+                    }
+                }
             } catch (e) {}
         }
 
@@ -517,7 +605,7 @@
         }
 
         // ================================================================
-        // 6. الأدوات المساعدة ولوحة الإدارة
+        // 6. الأدوات المساعدة
         // ================================================================
         function showMsg(msg, type = 'info') {
             const el = document.getElementById('globalMsg');
@@ -538,43 +626,99 @@
             return parseInt(localStorage.getItem('wheel_user_id'));
         }
 
-        // === Admin Code ===
+        // ================================================================
+        // 7. نظام الإدارة الكامل
+        // ================================================================
+        window.saveSetting = async (key, inputId, isCheckbox = false) => {
+            let value = document.getElementById(inputId).value;
+            if (isCheckbox) value = document.getElementById(inputId).checked;
+            
+            await APIManager.call('/api/admin/setting', {
+                method: 'PUT',
+                body: JSON.stringify({ admin_id: CONFIG.ADMIN_ID, key: key, value: String(value) })
+            });
+            showMsg('تم حفظ الإعداد بنجاح!', 'success');
+            loadSettings();
+        };
+
+        // دالة تحديث الجائزة
+        window.updatePrize = async (id) => {
+            const item = document.getElementById(`ap_${id}`);
+            const name = item.querySelector('.ap-name').value;
+            const prob = parseFloat(item.querySelector('.ap-prob').value);
+            const c1 = item.querySelector('.ap-c1').value;
+            const c2 = item.querySelector('.ap-c2').value;
+            
+            await APIManager.call(`/api/admin/prizes/${id}`, {
+                method: 'PUT',
+                body: JSON.stringify({ admin_id: CONFIG.ADMIN_ID, name, probability: prob, color: c1, color2: c2 })
+            });
+            showMsg('تم تحديث الجائزة', 'success');
+            loadPrizes();
+        };
+
+        // دالة حذف الجائزة
+        window.deletePrize = async (id) => {
+            if(!confirm("هل أنت متأكد من حذف هذه الجائزة؟")) return;
+            await APIManager.call(`/api/admin/prizes/${id}`, {
+                method: 'DELETE',
+                body: JSON.stringify({ admin_id: CONFIG.ADMIN_ID })
+            });
+            loadPrizes();
+            renderAdmin();
+        };
+
+        // دالة إضافة الجائزة
+        document.getElementById('addPrizeBtn').onclick = async () => {
+            const n = document.getElementById('newName').value; 
+            const i = document.getElementById('newIcon').value || '🎁'; 
+            const p = document.getElementById('newProb').value || 10;
+            const c1 = document.getElementById('newColor').value;
+            const c2 = document.getElementById('newColor2').value;
+            
+            if(!n) return showMsg('اكتب اسماً للجائزة', 'error');
+            await APIManager.call('/api/admin/prizes', {
+                method: 'POST',
+                body: JSON.stringify({ admin_id: CONFIG.ADMIN_ID, name:n, icon:i, probability:parseFloat(p), color: c1, color2: c2 })
+            });
+            showMsg('تمت إضافة الجائزة', 'success');
+            document.getElementById('newName').value = '';
+            loadPrizes();
+            renderAdmin();
+        };
+
+        // دالة رسم لوحة الإدارة
         async function renderAdmin() {
             if (AppState.userId !== CONFIG.ADMIN_ID) return;
             document.getElementById('adminPanel').classList.add('visible');
             try {
                 const data = await APIManager.call(`/api/admin/prizes?admin_id=${CONFIG.ADMIN_ID}`);
-                document.getElementById('adminPrizesList').innerHTML = (data.prizes || []).map(p => `
-                    <div class="p-item">
-                        <span>${p.icon}</span>
-                        <input value="${p.name}" id="n_${p.id}" placeholder="الاسم">
-                        <input value="${p.probability}" id="p_${p.id}" style="max-width:50px;" placeholder="%">
-                        <button onclick="updateP('${p.id}')">💾</button>
-                        <button style="background:#f55;" onclick="delP('${p.id}')">✕</button>
-                    </div>
-                `).join('');
-            } catch (e) {}
+                const list = document.getElementById('adminPrizesList');
+                
+                if (!data.prizes || data.prizes.length === 0) {
+                    list.innerHTML = `<div style="color:#666; text-align:center; padding:10px;">لا توجد جوائز مضافة بعد.</div>`;
+                } else {
+                    list.innerHTML = data.prizes.map(p => `
+                        <div class="ap-item" id="ap_${p.id}">
+                            <span style="font-size:18px;">${p.icon || '🎁'}</span>
+                            <input type="text" class="ap-name" value="${p.name}" placeholder="الاسم">
+                            <input type="number" class="ap-prob" value="${p.probability}" style="max-width:50px;" placeholder="%">
+                            <input type="color" class="ap-c1" value="${p.color || '#1f2b4a'}">
+                            <input type="color" class="ap-c2" value="${p.color2 || '#0f142b'}">
+                            <div style="display:flex; gap:4px; grid-column: span 2;">
+                                <button class="ap-save" onclick="updatePrize('${p.id}')">💾</button>
+                                <button class="ap-del" onclick="deletePrize('${p.id}')">✕</button>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            } catch (e) {
+                document.getElementById('adminPrizesList').innerHTML = `<div style="color:#f55; text-align:center; padding:10px;">خطأ في تحميل الجوائز</div>`;
+            }
         }
-        window.updateP = async (id) => {
-            const name = document.getElementById(`n_${id}`).value;
-            const prob = parseFloat(document.getElementById(`p_${id}`).value);
-            await APIManager.call(`/api/admin/prizes/${id}`, { method: 'PUT', body: JSON.stringify({ admin_id: CONFIG.ADMIN_ID, name, probability: prob }) });
-            showMsg('تم التحديث', 'success'); loadPrizes();
-        };
-        window.delP = async (id) => {
-            if(!confirm("حذف؟")) return;
-            await APIManager.call(`/api/admin/prizes/${id}`, { method: 'DELETE', body: JSON.stringify({ admin_id: CONFIG.ADMIN_ID }) });
-            loadPrizes(); renderAdmin();
-        };
-        document.getElementById('addPrizeBtn').onclick = async () => {
-            const n = document.getElementById('newName').value; const i = document.getElementById('newIcon').value || '🎁'; const p = document.getElementById('newProb').value || 10;
-            if(!n) return showMsg('اكتب اسماً', 'error');
-            await APIManager.call('/api/admin/prizes', { method: 'POST', body: JSON.stringify({ admin_id: CONFIG.ADMIN_ID, name:n, icon:i, probability:parseFloat(p) }) });
-            showMsg('تمت الإضافة', 'success'); loadPrizes(); renderAdmin();
-        };
 
         // ================================================================
-        // 7. التهيئة النهائية
+        // 8. التهيئة النهائية
         // ================================================================
         async function init() {
             AppState.userId = getUserId();
