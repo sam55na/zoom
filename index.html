@@ -4,324 +4,206 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>IChancy Pro</title>
-    <script src="https://telegram.org/js/telegram-web-app.js">
-    </script>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
+        /* التنسيق العام والخلفية الاحترافية */
         :root {
-            --gold-primary: #f5d76e;
-            --gold-dark: #b58e3b;
-            --bg-deep: #07070d;
-            --neon-glow: 0 0 30px rgba(255, 215, 0, 0.15);
+            --bg-dark: #0b0e17;
+            --gold-main: #ffd700;
+            --gold-dark: #b8860b;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
-
+        
         html, body {
             width: 100%; min-height: 100vh;
-            background: var(--bg-deep);
+            background: var(--bg-dark);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             display: flex; flex-direction: column; align-items: center;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            overflow-x: hidden;
-            padding: 10px;
-            user-select: none;
+            overflow-x: hidden; user-select: none;
+            padding: 15px 10px;
         }
 
-        /* خلفية عميقة مع نجوم متحركة */
-        .starfield {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 0;
-            background: radial-gradient(circle at 50% 50%, #14142b, #05050a);
-        }
-        .star {
-            position: absolute;
-            background: #fff;
-            border-radius: 50%;
-            animation: twinkle var(--duration) ease-in-out infinite alternate;
-        }
-        @keyframes twinkle {
-            0% { opacity: 0.2; transform: scale(0.5); }
-            100% { opacity: 1; transform: scale(1.2); }
+        /* الخلفية نجمة داكنة لامعة */
+        .bg-layer {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1;
+            background: radial-gradient(circle at 50% 30%, #1f1d35 0%, #05050c 100%);
         }
 
-        /* ===== النصوص العلوية ===== */
-        .ui-header {
-            position: relative; z-index: 10;
+        /* === النصوص العلوية === */
+        .header-ui {
             width: 100%; max-width: 420px;
-            text-align: center;
-            margin-top: 10px; margin-bottom: 15px;
+            text-align: center; margin-bottom: 15px; z-index: 10;
         }
-        .ui-header h1 {
-            font-size: 20px; font-weight: 700;
-            color: #fff;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.8);
-            display: flex; justify-content: center; align-items: center; gap: 8px;
+        .header-ui .status-line {
+            display: flex; align-items: center; justify-content: center;
+            color: #e5c07b; font-size: 18px; font-weight: 700; gap: 8px;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.05);
         }
-        .ui-header h1 .status-lock { color: #f5d76e; }
-        .ui-header p {
-            font-size: 13px; color: #a99b8b;
-            margin-top: 8px; line-height: 1.6;
+        .header-ui .sub-text {
+            color: #8f8575; font-size: 13px; line-height: 1.7; margin-top: 6px;
         }
-        .ui-header p .highlight { color: var(--gold-primary); font-weight: bold; }
+        .header-ui .sub-text .gold { color: var(--gold-main); font-weight: bold; }
 
-        /* ===== العجلة ===== */
+        /* === العجلة === */
         .wheel-wrapper {
-            position: relative;
-            width: 100%;
-            max-width: 420px;
-            aspect-ratio: 1/1;
-            margin: 0 auto 10px auto;
-            z-index: 5;
-            display: none;
-            animation: fadeScaleIn 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative; width: 100%; max-width: 400px;
+            aspect-ratio: 1/1; margin: 0 auto 10px auto;
+            display: none; z-index: 5;
+            animation: popIn 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
         .wheel-wrapper.visible { display: block; }
 
         .wheel-container {
             position: relative; width: 100%; height: 100%;
             border-radius: 50%;
-            padding: 10px;
-            box-shadow: 0 0 80px rgba(255, 215, 0, 0.03), inset 0 0 80px rgba(0,0,0,0.5);
+            padding: 8px; /* فراغ للإطار والنيون */
+            box-shadow: 0 0 60px rgba(255, 215, 0, 0.03);
         }
 
-        /* السهم */
-        .arrow-pointer {
-            position: absolute;
-            top: -5px; left: 50%;
-            transform: translateX(-50%);
-            z-index: 20;
+        /* السهم الذهبي */
+        .arrow {
+            position: absolute; top: -12px; left: 50%;
+            transform: translateX(-50%); z-index: 20;
             width: 0; height: 0;
-            border-left: 20px solid transparent;
-            border-right: 20px solid transparent;
+            border-left: 22px solid transparent;
+            border-right: 22px solid transparent;
             border-top: 45px solid #ffd700;
-            filter: drop-shadow(0 0 30px rgba(255, 215, 0, 0.9));
+            filter: drop-shadow(0 0 30px rgba(255, 215, 0, 0.8));
             pointer-events: none;
         }
-        .arrow-pointer::after {
-            content: '';
-            position: absolute; top: -52px; left: -14px;
+        .arrow::after {
+            content: ''; position: absolute; top: -50px; left: -14px;
             width: 28px; height: 28px;
-            background: radial-gradient(circle at 35% 35%, #fff, #d4af37);
+            background: radial-gradient(circle at 30% 30%, #ffffff, #e6b800);
             border-radius: 50%;
-            box-shadow: inset 0 -3px 5px rgba(0,0,0,0.6);
+            box-shadow: inset 0 -3px 6px rgba(0,0,0,0.4);
         }
 
-        /* اللوحة الرئيسية */
+        /* اللوحة */
         #wheelCanvas {
             width: 100% !important; height: 100% !important;
-            border-radius: 50%;
-            display: block;
+            border-radius: 50%; display: block;
+            box-shadow: inset 0 0 30px rgba(0,0,0,0.7);
             background: transparent;
-            transition: filter 0.2s ease;
-        }
-        /* تأثير لمعان العجلة عند الدوران */
-        #wheelCanvas.spinning {
-            filter: drop-shadow(0 0 60px rgba(255, 215, 0, 0.25)) brightness(1.05);
         }
 
-        @keyframes fadeScaleIn {
-            0% { opacity: 0; transform: scale(0.85) rotate(-5deg); }
+        @keyframes popIn {
+            0% { opacity: 0; transform: scale(0.9) rotate(-8deg); }
             100% { opacity: 1; transform: scale(1) rotate(0deg); }
         }
 
-        /* ===== زر الدوران ===== */
-        .action-area {
-            position: relative; z-index: 10;
-            width: 100%; max-width: 380px;
-            display: flex; justify-content: center;
-            margin-top: -5px;
-        }
+        /* === الزر === */
+        .action-area { width: 100%; max-width: 380px; display: flex; justify-content: center; margin-top: -5px; z-index: 10; }
         .btn-spin {
-            padding: 18px 45px;
-            border: none;
-            border-radius: 50px;
+            padding: 16px 40px; border: none; border-radius: 50px;
             width: 100%; max-width: 280px;
-            font-size: 20px; font-weight: 800;
-            color: #1a1a1a;
-            background: linear-gradient(180deg, #fceabb 0%, #f8b500 100%);
-            box-shadow: 0 4px 30px rgba(255, 215, 0, 0.3), inset 0 2px 0 rgba(255,255,255,0.6);
-            cursor: pointer;
-            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            position: relative;
+            font-size: 19px; font-weight: 800; color: #1a1a1a;
+            background: linear-gradient(180deg, #fdf0b0 0%, #d4af37 100%);
+            box-shadow: 0 6px 30px rgba(255, 215, 0, 0.2), inset 0 2px 0 rgba(255,255,255,0.7);
+            cursor: pointer; transition: all 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             display: flex; justify-content: center; align-items: center; gap: 10px;
         }
         .btn-spin:active:not(:disabled) { transform: scale(0.95); }
-        .btn-spin:disabled { opacity: 0.6; filter: grayscale(0.4); box-shadow: none; cursor: not-allowed; transform: none; }
-        .btn-spin .icon { font-size: 22px; }
+        .btn-spin:disabled { opacity: 0.5; filter: grayscale(0.6); box-shadow: none; cursor: not-allowed; transform: none; }
+        
+        .btn-spin .icon { font-size: 20px; }
+        .btn-spin .timer-text { font-size: 17px; color: #4a3b1a; }
 
-        /* المؤقت داخل الزر */
-        .btn-spin .timer-text {
-            font-size: 18px;
-            color: #4a3b1a;
-        }
-
-        .loader-ring {
-            display: none;
-            width: 24px; height: 24px;
-            border: 3px solid rgba(0,0,0,0.1);
-            border-top: 3px solid #000;
-            border-radius: 50%;
-            animation: spinLoader 0.8s linear infinite;
-        }
+        /* اللودر الخاص بالزر */
+        .loader-ring { display: none; width: 20px; height: 20px; border: 3px solid rgba(0,0,0,0.1); border-top: 3px solid #000; border-radius: 50%; animation: spin 0.8s linear infinite; }
         .btn-spin.loading .loader-ring { display: inline-block; }
         .btn-spin.loading .btn-text { display: none; }
         .btn-spin.loading .icon { display: none; }
-        @keyframes spinLoader { 100% { transform: rotate(360deg); } }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
 
-        /* ===== صندوق النتيجة ===== */
-        .result-box {
-            position: relative; z-index: 10;
-            width: 100%; max-width: 380px;
-            margin-top: 15px;
-            padding: 15px;
-            background: rgba(20, 20, 30, 0.7);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 215, 0, 0.05);
-            border-radius: 20px;
-            text-align: center;
-            display: none;
-            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-        .result-box.show {
-            display: block;
-            animation: popIn 0.5s forwards;
-        }
-        .result-box.winner {
-            border-color: rgba(255, 215, 0, 0.4);
-            box-shadow: 0 0 60px rgba(255, 215, 0, 0.05);
-        }
-        @keyframes popIn {
-            0% { transform: scale(0.8) translateY(20px); opacity: 0; }
-            100% { transform: scale(1) translateY(0); opacity: 1; }
-        }
-        .result-box .prize-name {
-            font-size: 22px; font-weight: bold;
-            color: #fff;
-            margin-bottom: 5px;
-        }
-        .result-box.winner .prize-name {
-            background: linear-gradient(135deg, #fceabb, #f8b500);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-        }
-        .result-box .prize-desc {
-            font-size: 16px; color: #a99b8b;
-        }
-
-        /* ===== أخطاء وإشعارات ===== */
-        .status-msg {
-            position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
-            z-index: 999;
-            padding: 12px 25px;
-            border-radius: 15px;
-            background: rgba(0,0,0,0.9);
-            backdrop-filter: blur(10px);
-            color: #fff;
-            font-weight: bold;
-            font-size: 15px;
-            display: none;
-            border: 1px solid rgba(255,255,255,0.05);
-            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
-            max-width: 90%;
-            text-align: center;
-            opacity: 0;
+        /* === النتيجة === */
+        .result-panel {
+            width: 100%; max-width: 380px; margin-top: 15px;
+            padding: 15px; background: rgba(20, 20, 30, 0.6);
+            backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 215, 0, 0.1);
+            border-radius: 20px; text-align: center;
+            display: none; z-index: 10;
             transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
-        .status-msg.active {
-            display: block; opacity: 1;
-            animation: floatIn 0.5s forwards;
+        .result-panel.show { display: block; animation: popIn 0.5s forwards; }
+        .result-panel.winner { border-color: rgba(255, 215, 0, 0.5); box-shadow: 0 0 40px rgba(255, 215, 0, 0.1); }
+        
+        .result-panel .p-title {
+            font-size: 20px; font-weight: bold; color: #fff; margin-bottom: 4px;
         }
-        @keyframes floatIn {
-            0% { transform: translateX(-50%) translateY(-30px); opacity: 0; }
-            100% { transform: translateX(-50%) translateY(0); opacity: 1; }
+        .result-panel.winner .p-title { background: linear-gradient(135deg, #ffd700, #ff8c00); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .result-panel .p-desc { font-size: 15px; color: #a99b8b; }
+
+        /* === شاشة التحميل === */
+        .loading-screen {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: var(--bg-dark); z-index: 9999;
+            display: none; flex-direction: column; align-items: center; justify-content: center;
         }
+        .loading-screen.active { display: flex; }
+        .custom-spinner { width: 40px; height: 40px; border: 4px solid rgba(255, 215, 0, 0.1); border-top: 4px solid #ffd700; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 20px; }
+        .loading-screen p { color: #666; font-size: 14px; }
+
+        /* === التنبيهات === */
+        .status-msg {
+            position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+            z-index: 1000; padding: 12px 24px; border-radius: 15px;
+            background: rgba(0,0,0,0.9); backdrop-filter: blur(10px);
+            color: #fff; font-weight: bold; font-size: 14px;
+            display: none; border: 1px solid rgba(255,255,255,0.05); box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+            max-width: 90%; text-align: center; opacity: 0;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .status-msg.active { display: block; opacity: 1; transform: translateX(-50%) translateY(0); }
         .status-msg.success { border-color: #00ff88; color: #00ff88; }
         .status-msg.error { border-color: #ff4444; color: #ff6b6b; }
 
-        /* ===== الشاشة الافتتاحية ===== */
-        .loading-screen {
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: var(--bg-deep);
-            z-index: 9999;
-            display: none;
-            flex-direction: column; align-items: center; justify-content: center;
-        }
-        .loading-screen.active { display: flex; }
-        .spinner-custom {
-            width: 50px; height: 50px;
-            border: 4px solid rgba(255, 215, 0, 0.1);
-            border-top: 4px solid #f5d76e;
-            border-radius: 50%;
-            animation: spinLoader 1s linear infinite;
-            margin-bottom: 20px;
-        }
-        .loading-screen p { color: #666; font-size: 14px; }
-
-        /* ==== لوحة الإدارة ==== */
+        /* === لوحة الإدارة (Admin) === */
         .admin-panel {
-            display: none;
-            width: 100%; max-width: 420px;
-            margin-top: 20px;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 20px;
-            padding: 15px;
-            z-index: 10;
-            position: relative;
+            display: none; width: 100%; max-width: 420px; margin-top: 20px;
+            background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 20px; padding: 15px; z-index: 10; position: relative;
         }
-        .admin-panel.visible { display: block; animation: fadeScaleIn 0.5s ease; }
-        .admin-panel h3 { color: #f5d76e; font-size: 14px; margin-bottom: 10px; display: flex; gap: 10px; align-items: center; }
-        .admin-panel .p-item {
-            display: flex; gap: 10px; padding: 8px 10px; margin-bottom: 5px;
-            background: rgba(255,255,255,0.02); border-radius: 10px; align-items: center;
-        }
-        .admin-panel .p-item input {
-            background: #111; border: 1px solid #333; color: #fff; padding: 5px 8px; border-radius: 5px; font-size: 12px;
-        }
-        .admin-panel .p-item input:focus { border-color: #f5d76e; outline: none; }
-        .admin-panel .p-item .btn-del { background: none; border: none; color: #f55; cursor: pointer; font-size: 12px; }
+        .admin-panel.visible { display: block; animation: popIn 0.5s ease; }
+        .admin-panel h3 { color: #ffd700; font-size: 14px; margin-bottom: 10px; display: flex; gap: 10px; align-items: center; }
+        .admin-panel .p-item { display: flex; gap: 8px; padding: 6px 10px; margin-bottom: 5px; background: rgba(255,255,255,0.02); border-radius: 8px; align-items: center; flex-wrap: wrap;}
+        .admin-panel .p-item input { background: #111; border: 1px solid #333; color: #fff; padding: 4px 6px; border-radius: 4px; font-size: 12px; flex: 1; min-width: 40px;}
+        .admin-panel .p-item input:focus { border-color: #ffd700; outline: none; }
+        .admin-panel .p-item button { background: #f55; border: none; color: #fff; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 11px;}
         .admin-panel .add-form { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 10px; }
-        .admin-panel .add-form input { flex: 1; min-width: 50px; background: #111; border: 1px solid #333; padding: 8px; border-radius: 5px; color: #fff; font-size: 12px; }
-        .admin-panel .add-form button { background: #f5d76e; border: none; padding: 8px 15px; border-radius: 5px; font-weight: bold; cursor: pointer; }
-
-        @media (max-width: 480px) {
-            .ui-header h1 { font-size: 16px; }
-            .ui-header p { font-size: 12px; }
-            .btn-spin { font-size: 17px; padding: 15px 30px; }
-            .arrow-pointer { border-left-width: 15px; border-right-width: 15px; border-top-width: 35px; top: 0px; }
-            .arrow-pointer::after { width: 20px; height: 20px; top: -40px; left: -10px; }
-        }
+        .admin-panel .add-form input { flex: 1; min-width: 40px; background: #111; border: 1px solid #333; padding: 6px; border-radius: 4px; color: #fff; font-size: 12px; }
+        .admin-panel .add-form button { background: #ffd700; border: none; padding: 6px 12px; border-radius: 4px; font-weight: bold; cursor: pointer; color: #000; }
     </style>
 </head>
 <body>
+    <div class="bg-layer"></div>
 
-    <!-- خلفية متحركة -->
-    <div class="starfield" id="starfield"></div>
-
-    <!-- شاشة التحميل -->
     <div class="loading-screen" id="loadingScreen">
-        <div class="spinner-custom"></div>
-        <p>جاري تحميل العجلة...</p>
+        <div class="custom-spinner"></div>
+        <p>جاري تحميل البيانات...</p>
     </div>
 
-    <!-- الإشعارات -->
     <div class="status-msg" id="globalMsg"></div>
 
-    <!-- واجهة المستخدم -->
-    <div class="ui-header">
-        <h1><span class="status-lock">🔒</span> لا تملك أي لفة حالياً</h1>
-        <p>💰 أودع <span class="highlight">50,000</span> ل.س للحصول على لفة مجانية!<br>👥 أو ادعُ <span class="highlight">5</span> أصدقاء لتفعيل اللفة.</p>
+    <div class="header-ui">
+        <div class="status-line">🔒 لا تملك أي لفة حالياً</div>
+        <div class="sub-text">
+            💰 أودع <span class="gold">50,000</span> ل.س أو أكثر اليوم<br>
+            واحصل على لفة مجانية!<br>
+            👥 أو اجمع <span class="gold">5</span> إحالات نشطة اليوم
+        </div>
     </div>
 
-    <!-- العجلة -->
     <div class="wheel-wrapper" id="wheelWrapper">
         <div class="wheel-container">
-            <div class="arrow-pointer" id="pointer"></div>
+            <div class="arrow"></div>
             <canvas id="wheelCanvas" width="600" height="600"></canvas>
         </div>
     </div>
 
-    <!-- زر الدوران -->
     <div class="action-area">
         <button class="btn-spin" id="spinBtn" disabled>
             <span class="loader-ring"></span>
@@ -330,491 +212,389 @@
         </button>
     </div>
 
-    <!-- صندوق النتيجة -->
-    <div class="result-box" id="resultBox">
-        <div class="prize-name" id="prizeTitle">جائزة!</div>
-        <div class="prize-desc" id="prizeDesc">تفاصيل الجائزة هنا</div>
+    <div class="result-panel" id="resultPanel">
+        <div class="p-title" id="resultTitle">الجائزة</div>
+        <div class="p-desc" id="resultDesc">وصف الجائزة</div>
     </div>
 
-    <!-- لوحة الإدارة -->
     <div class="admin-panel" id="adminPanel">
-        <h3>⚙️ لوحة التحكم <span style="font-size:10px; background:#f5d76e; color:#000; padding:2px 10px; border-radius:10px;">ADMIN</span></h3>
+        <h3>⚙️ لوحة التحكم</h3>
         <div id="adminPrizesList"></div>
         <div class="add-form">
             <input type="text" id="newName" placeholder="الاسم">
             <input type="text" id="newIcon" placeholder="أيقونة" style="max-width:50px;">
-            <input type="number" id="newProb" placeholder="نسبة %" style="max-width:60px;">
+            <input type="number" id="newProb" placeholder="%" style="max-width:50px;">
             <button id="addPrizeBtn">إضافة</button>
         </div>
     </div>
 
     <script>
         // ================================================================
-        // 1. القلب التقني: الذكاء البرمجي للاتصال والرسم
+        // 1. الإعدادات الثابتة
         // ================================================================
         const CONFIG = {
             API: 'https://joj-d0kl.onrender.com',
             ADMIN_ID: 7011476249,
-            SPIN_DURATION: 4000, // المدة الافتراضية
-            MAX_RETRIES: 2
+            SPIN_TIME: 4500
         };
 
-        // --- إدارة حالة المستخدم ---
-        let State = {
+        let AppState = {
             userId: null,
             prizes: [],
+            rotation: 0,
             isSpinning: false,
             canSpin: false,
-            rotation: 0,
-            settings: {},
-            timerInterval: null
+            settings: {}
         };
 
-        // --- إدارة الاتصال الذكي ---
-        const NetManager = {
-            async fetch(url, options = {}) {
+        // ================================================================
+        // 2. نظام الاتصال المتقدم (مع إعادة المحاولة و Timeout)
+        // ================================================================
+        const APIManager = {
+            async call(endpoint, options = {}) {
                 let attempts = 0;
-                while (attempts <= CONFIG.MAX_RETRIES) {
+                while (attempts < 3) {
                     try {
-                        const res = await fetch(`${CONFIG.API}${url}`, {
+                        const controller = new AbortController();
+                        const timeout = setTimeout(() => controller.abort(), 15000); // 15 ثانية مهلة
+
+                        const res = await fetch(`${CONFIG.API}${endpoint}`, {
                             ...options,
                             headers: { 'Content-Type': 'application/json', ...options.headers },
-                            signal: AbortSignal.timeout(15000) // مهلة 15 ثانية
+                            signal: controller.signal
                         });
+                        clearTimeout(timeout);
+
                         if (!res.ok) throw new Error(`HTTP ${res.status}`);
                         return await res.json();
+
                     } catch (e) {
                         attempts++;
-                        if (attempts > CONFIG.MAX_RETRIES) throw new Error("تعذر الاتصال بالخادم. تحقق من الإنترنت.");
-                        await new Promise(r => setTimeout(r, 1000 * attempts)); // تأخير تصاعدي
+                        if (attempts >= 3) {
+                            throw new Error("تعذر الاتصال بالخادم، تحقق من الإنترنت.");
+                        }
+                        await new Promise(r => setTimeout(r, 1500 * attempts));
                     }
                 }
             }
         };
 
-        // --- نظام المؤثرات الصوتية ---
-        class SoundEngine {
-            constructor() { this.ctx = null; }
-            init() {
-                if (!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)();
-                if (this.ctx.state === 'suspended') this.ctx.resume();
-            }
-            play(type) {
-                if (!this.ctx) return;
-                try {
-                    const osc = this.ctx.createOscillator();
-                    const gain = this.ctx.createGain();
-                    osc.connect(gain); gain.connect(this.ctx.destination);
-                    
-                    if(type === 'spin') {
-                        osc.frequency.setValueAtTime(180, this.ctx.currentTime);
-                        osc.frequency.exponentialRampToValueAtTime(300, this.ctx.currentTime + 0.1);
-                        gain.gain.setValueAtTime(0.05, this.ctx.currentTime);
-                        gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.1);
-                        osc.start(); osc.stop(this.ctx.currentTime + 0.1);
-                    } else if (type === 'win') {
-                        osc.frequency.setValueAtTime(523, this.ctx.currentTime);
-                        gain.gain.setValueAtTime(0.1, this.ctx.currentTime);
-                        gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.3);
-                        osc.start(); osc.stop(this.ctx.currentTime + 0.3);
-                    }
-                } catch (e) {}
-            }
-        }
-        const AudioEngine = new SoundEngine();
-
         // ================================================================
-        // 2. المحرك البصري المتقدم (Canvas)
+        // 3. المحرك البصري (Canvas + أضواء النيون الدوارة)
         // ================================================================
         const canvas = document.getElementById('wheelCanvas');
         const ctx = canvas.getContext('2d');
-        let ledOffset = 0;
-        let animFrameId = null;
+        let neonOffset = 0;
+        let animFrame = null;
 
-        function initCanvas() {
+        function resizeCanvas() {
             const rect = canvas.parentElement.getBoundingClientRect();
-            const size = Math.min(rect.width, rect.height) * window.devicePixelRatio;
+            const size = Math.min(rect.width, rect.height) * (window.devicePixelRatio || 1);
             canvas.width = size || 600;
             canvas.height = size || 600;
-            canvas.style.width = '100%'; canvas.style.height = '100%';
+            canvas.style.width = '100%';
+            canvas.style.height = '100%';
         }
 
-        // رسم العجلة (التأثيرات الضوئية يتم تطبيقها هنا)
-        function renderWheel(highlightIdx = -1, forcedRotation = null) {
+        function renderWheel(highlightIdx = -1, forcedRot = null) {
             const w = canvas.width, h = canvas.height;
             const cx = w/2, cy = h/2;
-            // هامش داخلي للنقاط المضيئة
-            const radius = Math.min(w, h) / 2 - 25; 
-            const total = State.prizes.length;
+            const r = Math.min(w, h)/2 - 20; // مساحة للأضواء
+            const total = AppState.prizes.length;
             if (total === 0) return;
 
             const step = (2 * Math.PI) / total;
-            const rot = forcedRotation !== null ? forcedRotation : State.rotation;
-
+            const rot = forcedRot !== null ? forcedRot : AppState.rotation;
             ctx.clearRect(0, 0, w, h);
 
-            // --- رسم القطاعات ---
-            State.prizes.forEach((p, i) => {
+            // 1. رسم القطاعات
+            AppState.prizes.forEach((p, i) => {
                 const start = i * step + rot - Math.PI/2;
                 const end = start + step;
                 const hl = (i === highlightIdx);
 
-                ctx.beginPath();
-                ctx.moveTo(cx, cy);
-                ctx.arc(cx, cy, radius, start, end);
-                ctx.closePath();
-
-                // تناوب الألوان (أزرق داكن / عاجي)
-                const c1 = hl ? '#ffdd00' : (i % 2 === 0 ? '#19223d' : '#e8dec3');
-                const c2 = hl ? '#f57c00' : (i % 2 === 0 ? '#0c1225' : '#c7b596');
+                ctx.beginPath(); ctx.moveTo(cx, cy); ctx.arc(cx, cy, r, start, end); ctx.closePath();
                 
-                const grad = ctx.createRadialGradient(cx - radius*0.2, cy - radius*0.2, 0, cx, cy, radius);
-                grad.addColorStop(0, c1);
-                grad.addColorStop(1, c2);
-                ctx.fillStyle = grad;
-                ctx.fill();
+                const c1 = hl ? '#fdc830' : (i % 2 === 0 ? '#1f2b4a' : '#f0e6c8');
+                const c2 = hl ? '#f37335' : (i % 2 === 0 ? '#0f142b' : '#cabb9b');
                 
-                // حدود ذهبية
-                ctx.strokeStyle = hl ? '#ffffff' : 'rgba(184, 134, 11, 0.3)';
-                ctx.lineWidth = hl ? 3 : 1.5;
-                ctx.stroke();
+                const grad = ctx.createRadialGradient(cx - r*0.2, cy - r*0.2, 0, cx, cy, r);
+                grad.addColorStop(0, c1); grad.addColorStop(1, c2);
+                ctx.fillStyle = grad; ctx.fill();
+                
+                ctx.strokeStyle = hl ? '#ffffff' : 'rgba(255,215,0,0.3)';
+                ctx.lineWidth = hl ? 3 : 1.5; ctx.stroke();
 
-                // النصوص والأيقونات
+                // النص
                 const mid = start + step/2;
-                const tx = cx + Math.cos(mid) * (radius * 0.65);
-                const ty = cy + Math.sin(mid) * (radius * 0.65);
-
-                ctx.save();
-                ctx.translate(tx, ty);
-                ctx.rotate(mid + (mid > Math.PI/2 ? Math.PI : 0));
+                const tx = cx + Math.cos(mid) * (r * 0.6);
+                const ty = cy + Math.sin(mid) * (r * 0.6);
+                ctx.save(); ctx.translate(tx, ty); ctx.rotate(mid + (mid > Math.PI/2 ? Math.PI : 0));
+                ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+                ctx.shadowColor = 'rgba(0,0,0,0.5)'; ctx.shadowBlur = 8;
                 
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-                ctx.shadowColor = 'rgba(0,0,0,0.6)';
-                ctx.shadowBlur = 8;
-                
-                const txtColor = (i % 2 === 0 || hl) ? '#fff' : '#0a1220';
-                ctx.fillStyle = hl ? '#000' : txtColor;
-                
-                ctx.font = `32px "Segoe UI Emoji", sans-serif`;
+                ctx.fillStyle = (i % 2 === 0 || hl) ? '#fff' : '#000';
+                ctx.font = `bold 22px sans-serif`;
                 ctx.fillText(p.icon || '🎁', 0, -12);
-                
-                ctx.font = `bold 16px sans-serif`;
+                ctx.font = `bold 13px sans-serif`;
                 let name = p.name || '';
-                ctx.fillText(name.length > 8 ? name.substr(0,8)+'..' : name, 0, 22);
-                
+                ctx.fillText(name.length > 7 ? name.slice(0,7)+'..' : name, 0, 18);
                 ctx.restore();
             });
 
-            // --- حلقة النيون المتدفقة (LED Ring) ---
-            const ledCount = 24;
-            const ledRadius = radius + 12;
-            for(let i=0; i<ledCount; i++) {
+            // 2. إطار العجلة (Dark Metal)
+            ctx.beginPath(); ctx.arc(cx, cy, r + 5, 0, 2*Math.PI);
+            ctx.strokeStyle = '#111'; ctx.lineWidth = 12; ctx.stroke();
+            ctx.beginPath(); ctx.arc(cx, cy, r + 11, 0, 2*Math.PI);
+            ctx.strokeStyle = '#332b1a'; ctx.lineWidth = 6; ctx.stroke();
+
+            // 3. أضواء النيون الذهبية المتدفقة (Chase Light Logic)
+            const ledCount = 24; // 24 نقطة ضوئية
+            const ledRadius = r + 8;
+            for (let i = 0; i < ledCount; i++) {
                 const angle = (i / ledCount) * 2 * Math.PI - Math.PI/2;
                 const lx = cx + Math.cos(angle) * ledRadius;
                 const ly = cy + Math.sin(angle) * ledRadius;
                 
-                // الخوارزمية: ضوء يتحرك ويخلف وراءه مساراً
-                const dist = (i - ledOffset % ledCount + ledCount) % ledCount;
+                // خوارزمية "الضوء الجاري" مع ذيل ضوئي
+                let dist = (i - Math.floor(neonOffset) % ledCount + ledCount) % ledCount;
                 let intensity = 0;
-                if (dist < 5) intensity = 1 - (dist / 5);
                 
-                ctx.beginPath();
-                ctx.arc(lx, ly, 6, 0, 2 * Math.PI);
+                if (dist < 6) {
+                    intensity = 1 - (dist / 6); // من 1 إلى 0 تدريجياً
+                }
+                
+                ctx.beginPath(); ctx.arc(lx, ly, intensity > 0.8 ? 8 : 5, 0, 2*Math.PI);
                 if (intensity > 0) {
                     ctx.shadowColor = '#ffd700';
-                    ctx.shadowBlur = 30 * intensity;
-                    ctx.fillStyle = `rgba(255, 255, 255, ${intensity})`;
+                    ctx.shadowBlur = 40 * intensity;
+                    ctx.fillStyle = `rgba(255, 240, 180, ${intensity})`;
                 } else {
                     ctx.shadowBlur = 0;
-                    ctx.fillStyle = '#2a2520';
+                    ctx.fillStyle = '#2b2419';
                 }
                 ctx.fill();
             }
-            
-            // إذا لم تكن العجلة تدور، نزيد الإزاحة لإبقاء الأضواء متحركة
-            if (!State.isSpinning) {
-                ledOffset = (ledOffset + 0.15) % ledCount;
-            }
 
-            // --- مركز العجلة (معدني ثلاثي الأبعاد) ---
-            const centerR = radius * 0.18;
-            ctx.shadowBlur = 30; ctx.shadowColor = 'rgba(255,215,0,0.2)';
-            
-            const gradC = ctx.createRadialGradient(cx-6, cy-8, 0, cx, cy, centerR);
-            gradC.addColorStop(0, '#fff8e0');
-            gradC.addColorStop(0.5, '#e5b64c');
-            gradC.addColorStop(1, '#8a6914');
-            ctx.beginPath(); ctx.arc(cx, cy, centerR, 0, 2*Math.PI);
-            ctx.fillStyle = gradC; ctx.fill();
-            
+            // تحديث مؤشر النيون (يتحرك دائماً حتى لو العجلة واقفة)
+            neonOffset = (neonOffset + 0.4) % ledCount;
+
+            // 4. المركز المعدني
+            const cR = r * 0.18;
+            const cGrad = ctx.createRadialGradient(cx-4, cy-6, 0, cx, cy, cR);
+            cGrad.addColorStop(0, '#fff5d1'); cGrad.addColorStop(0.6, '#d4af37'); cGrad.addColorStop(1, '#8a6914');
             ctx.shadowBlur = 0;
-            ctx.fillStyle = '#0c0c0c';
-            ctx.font = `28px sans-serif`;
-            ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-            ctx.fillText(State.settings.center_icon || '🎯', cx+1, cy+2);
+            ctx.beginPath(); ctx.arc(cx, cy, cR, 0, 2*Math.PI);
+            ctx.fillStyle = cGrad; ctx.fill();
+            ctx.fillStyle = '#111'; ctx.font = 'bold 26px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+            ctx.fillText(AppState.settings.center_icon || '🎯', cx+1, cy+2);
         }
 
-        // حلقة التحديث المستمرة للرسوم المتحركة
         function startLoop() {
-            if (animFrameId) cancelAnimationFrame(animFrameId);
+            if (animFrame) cancelAnimationFrame(animFrame);
             function loop() {
-                if (State.prizes.length > 0) {
-                    renderWheel(-1, State.rotation);
+                if (AppState.prizes.length > 0 && !AppState.isSpinning) {
+                    renderWheel(-1, AppState.rotation);
                 }
-                animFrameId = requestAnimationFrame(loop);
+                animFrame = requestAnimationFrame(loop);
             }
             loop();
         }
 
         // ================================================================
-        // 3. منطق عمل العجلة (Spin Logic)
+        // 4. نظام التدوير السلس
         // ================================================================
-        async function performSpin() {
-            if (State.isSpinning || !State.canSpin) return;
-            
-            State.isSpinning = true;
+        async function spinAction() {
+            if (AppState.isSpinning || !AppState.canSpin) return;
+
+            AppState.isSpinning = true;
             const btn = document.getElementById('spinBtn');
-            btn.disabled = true;
-            btn.classList.add('loading');
-            document.getElementById('resultBox').classList.remove('show');
-            
-            AudioEngine.init();
-            // أصوات دورانية سريعة
-            const spinSound = setInterval(() => AudioEngine.play('spin'), 100);
+            btn.disabled = true; btn.classList.add('loading');
+            document.getElementById('resultPanel').classList.remove('show');
+
+            // إيقاف التحديث لتوفير الموارد أثناء الدوران الحاد
+            if (animFrame) cancelAnimationFrame(animFrame);
 
             try {
-                const data = await NetManager.fetch('/api/wheel/spin', {
+                const data = await APIManager.call('/api/wheel/spin', {
                     method: 'POST',
-                    body: JSON.stringify({ user_id: State.userId })
+                    body: JSON.stringify({ user_id: AppState.userId })
                 });
-
-                clearInterval(spinSound);
 
                 if (data.success) {
                     const prize = data.spin.prize;
-                    const pIdx = State.prizes.findIndex(p => p.id === prize.id);
-                    const winIdx = pIdx > -1 ? pIdx : Math.floor(Math.random() * State.prizes.length);
+                    const idx = AppState.prizes.findIndex(p => p.id === prize.id);
+                    const targetIdx = idx > -1 ? idx : Math.floor(Math.random() * AppState.prizes.length);
                     
-                    // حساب الوصول للقطاع
-                    const targetAngle = (winIdx / State.prizes.length) * 2 * Math.PI;
-                    // 6 لفات كاملة + استهداف الزاوية
-                    const totalRot = State.rotation + (6 * 2 * Math.PI) + (2 * Math.PI - targetAngle - ((2*Math.PI)/State.prizes.length/2));
+                    // حساب نقطة التوقف
+                    const targetAngle = (targetIdx / AppState.prizes.length) * 2 * Math.PI;
+                    const totalRot = AppState.rotation + (7 * 2 * Math.PI) + (2 * Math.PI - targetAngle - ((2*Math.PI)/AppState.prizes.length/2));
 
-                    // وقف مؤقت النيون ليكون الدوران سلساً جداً
-                    if (animFrameId) cancelAnimationFrame(animFrameId);
+                    const duration = CONFIG.SPIN_TIME;
+                    const startRot = AppState.rotation;
+                    const startTime = performance.now();
 
-                    const startRot = State.rotation;
-                    const duration = CONFIG.SPIN_DURATION;
-                    const sTime = performance.now();
+                    function doSpin(now) {
+                        const elapsed = now - startTime;
+                        const p = Math.min(elapsed / duration, 1);
+                        const eased = 1 - Math.pow(1 - p, 4);
+                        AppState.rotation = startRot + (totalRot - startRot) * eased;
+                        renderWheel(-1, AppState.rotation);
 
-                    function animateSpin(now) {
-                        const elapsed = now - sTime;
-                        const prog = Math.min(elapsed / duration, 1);
-                        // Ease Out Quartic (تباطؤ ناعم جداً في النهاية)
-                        const eased = 1 - Math.pow(1 - prog, 4);
-                        
-                        State.rotation = startRot + (totalRot - startRot) * eased;
-                        renderWheel(-1, State.rotation);
-
-                        if (prog < 1) {
-                            requestAnimationFrame(animateSpin);
-                        } else {
-                            State.rotation = totalRot;
-                            // إعادة تشغيل النيون
-                            startLoop();
-                            
-                            // إظهار النتيجة
-                            renderWheel(winIdx, State.rotation);
-                            const isWin = !prize.name.includes('حظ');
-                            
-                            document.getElementById('prizeTitle').textContent = prize.name || 'جائزة!';
-                            document.getElementById('prizeDesc').textContent = prize.description || '';
-                            const box = document.getElementById('resultBox');
-                            box.classList.add('show');
-                            if(isWin) box.classList.add('winner'); else box.classList.remove('winner');
-
-                            if(isWin) {
-                                AudioEngine.play('win');
-                            }
-                            
-                            State.isSpinning = false;
+                        if (p < 1) requestAnimationFrame(doSpin);
+                        else {
+                            AppState.rotation = totalRot;
+                            AppState.isSpinning = false;
                             btn.classList.remove('loading');
-                            loadUserStatus(); // تحديث الحالة (تبريد)
+                            
+                            // عرض النتيجة
+                            renderWheel(targetIdx, totalRot);
+                            const isWin = !prize.name.includes('حظ');
+                            const panel = document.getElementById('resultPanel');
+                            document.getElementById('resultTitle').textContent = prize.name || 'جائزة!';
+                            document.getElementById('resultDesc').textContent = prize.description || '';
+                            panel.classList.add('show');
+                            if (isWin) panel.classList.add('winner'); else panel.classList.remove('winner');
+                            
+                            startLoop(); // إعادة تشغيل النيون
+                            loadUserStatus(); // تحديث حالة التبريد
                         }
                     }
-                    requestAnimationFrame(animateSpin);
+                    requestAnimationFrame(doSpin);
                 } else {
-                    clearInterval(spinSound);
-                    State.isSpinning = false;
+                    AppState.isSpinning = false;
                     btn.classList.remove('loading');
-                    showMessage(data.error || "حدث خطأ", 'error');
-                    loadUserStatus();
+                    showMsg(data.error || "حدث خطأ", 'error');
+                    startLoop();
                 }
             } catch (e) {
-                clearInterval(spinSound);
-                State.isSpinning = false;
+                AppState.isSpinning = false;
                 btn.classList.remove('loading');
-                showMessage(e.message, 'error');
+                showMsg(e.message, 'error');
+                startLoop();
             }
         }
 
         // ================================================================
-        // 4. تحميل البيانات من الخادم (Data Layer)
+        // 5. نظام تحميل البيانات
         // ================================================================
-        async function loadUserStatus() {
-            try {
-                const data = await NetManager.fetch(`/api/wheel/history/${State.userId}`);
-                const btn = document.getElementById('spinBtn');
-                
-                if (data.success) {
-                    // تحديث التبريد
-                    if (data.spin_status?.can_spin) {
-                        State.canSpin = true;
-                        btn.disabled = false;
-                        btn.innerHTML = `<span class="icon">🎯</span><span class="btn-text">دَوِّر العجلة!</span>`;
-                        if (State.timerInterval) clearInterval(State.timerInterval);
-                    } else {
-                        State.canSpin = false;
-                        btn.disabled = true;
-                        const h = data.spin_status.remaining_hours || 0;
-                        const m = data.spin_status.remaining_minutes || 0;
-                        btn.innerHTML = `<span class="icon">⏳</span><span class="btn-text timer-text">${h}h ${m}m</span>`;
-                    }
-                }
-            } catch (e) { console.warn("Status fetch failed:", e); }
-        }
-
         async function loadPrizes() {
             try {
-                const data = await NetManager.fetch('/api/prizes');
+                const data = await APIManager.call('/api/prizes');
                 if (data.success) {
-                    State.prizes = data.prizes || [];
+                    AppState.prizes = data.prizes || [];
                     document.getElementById('wheelWrapper').classList.add('visible');
+                    resizeCanvas();
                     renderWheel();
                     startLoop();
                 }
-            } catch (e) { showMessage("فشل تحميل الجوائز", 'error'); }
+            } catch (e) { showMsg("فشل تحميل الجوائز", 'error'); }
         }
 
         async function loadSettings() {
             try {
-                const data = await NetManager.fetch(`/api/admin/settings?admin_id=${CONFIG.ADMIN_ID}`);
+                const data = await APIManager.call(`/api/admin/settings?admin_id=${CONFIG.ADMIN_ID}`);
+                if (data.success) AppState.settings = data.settings || {};
+            } catch (e) {}
+        }
+
+        async function loadUserStatus() {
+            try {
+                const data = await APIManager.call(`/api/wheel/history/${AppState.userId}`);
                 if (data.success) {
-                    State.settings = data.settings || {};
-                    if (State.settings.spin_duration) CONFIG.SPIN_DURATION = parseInt(State.settings.spin_duration);
+                    AppState.canSpin = data.spin_status?.can_spin || false;
+                    const btn = document.getElementById('spinBtn');
+                    if (AppState.canSpin && AppState.prizes.length > 0) {
+                        btn.disabled = false; btn.innerHTML = `<span class="icon">🎯</span><span class="btn-text">دَوِّر العجلة!</span>`;
+                    } else if (!AppState.canSpin) {
+                        btn.disabled = true;
+                        const h = data.spin_status?.remaining_hours || 0;
+                        const m = data.spin_status?.remaining_minutes || 0;
+                        btn.innerHTML = `<span class="icon">⏳</span><span class="btn-text timer-text">${h}h ${m}m</span>`;
+                    }
                 }
             } catch (e) {}
         }
 
         // ================================================================
-        // 5. النظام الإداري
+        // 6. الأدوات المساعدة ولوحة الإدارة
         // ================================================================
-        async function renderAdmin() {
-            if (State.userId !== CONFIG.ADMIN_ID) return;
-            const panel = document.getElementById('adminPanel');
-            panel.classList.add('visible');
-            
-            const data = await NetManager.fetch(`/api/admin/prizes?admin_id=${CONFIG.ADMIN_ID}`);
-            const list = document.getElementById('adminPrizesList');
-            list.innerHTML = (data.prizes || []).map(p => `
-                <div class="p-item">
-                    <span>${p.icon}</span>
-                    <input value="${p.name}" onchange="updatePrize(${p.id}, 'name', this.value)">
-                    <input type="number" value="${p.probability}" style="width:50px;" onchange="updatePrize(${p.id}, 'probability', this.value)">
-                    <button class="btn-del" onclick="deletePrize(${p.id})">✕</button>
-                </div>
-            `).join('');
-        }
-
-        window.updatePrize = async (id, key, val) => {
-            const data = { admin_id: CONFIG.ADMIN_ID, [key]: isNaN(val) ? val : parseFloat(val) };
-            await NetManager.fetch(`/api/admin/prizes/${id}`, { method: 'PUT', body: JSON.stringify(data) });
-            showMessage("تم التحديث", 'success');
-            loadPrizes();
-        };
-        window.deletePrize = async (id) => {
-            if(!confirm("حذف الجائزة؟")) return;
-            await NetManager.fetch(`/api/admin/prizes/${id}`, { method: 'DELETE', body: JSON.stringify({admin_id: CONFIG.ADMIN_ID}) });
-            loadPrizes(); renderAdmin();
-        };
-        document.getElementById('addPrizeBtn').onclick = async () => {
-            const n = document.getElementById('newName').value;
-            const i = document.getElementById('newIcon').value || '🎁';
-            const p = document.getElementById('newProb').value || 10;
-            if(!n) return showMessage("الرجاء كتابة اسم", 'error');
-            await NetManager.fetch('/api/admin/prizes', { method: 'POST', body: JSON.stringify({admin_id: CONFIG.ADMIN_ID, name:n, icon:i, probability:parseFloat(p)}) });
-            showMessage("تمت الإضافة", 'success');
-            loadPrizes(); renderAdmin();
-        };
-
-        // ================================================================
-        // 6. الأدوات المساعدة
-        // ================================================================
-        function showMessage(msg, type = 'info') {
+        function showMsg(msg, type = 'info') {
             const el = document.getElementById('globalMsg');
-            el.textContent = msg;
-            el.className = 'status-msg active ' + type;
+            el.textContent = msg; el.className = `status-msg active ${type}`;
             clearTimeout(el._timeout);
-            el._timeout = setTimeout(() => { el.classList.remove('active'); }, 4000);
+            el._timeout = setTimeout(() => el.classList.remove('active'), 4000);
         }
 
         function getUserId() {
             const params = new URLSearchParams(window.location.search);
             let id = params.get('user_id') || params.get('userId');
             if (id && !isNaN(id)) return parseInt(id);
-            try { if(window.Telegram?.WebApp?.initDataUnsafe?.user?.id) return window.Telegram.WebApp.initDataUnsafe.user.id; } catch(e){}
+            try {
+                if (window.Telegram?.WebApp?.initDataUnsafe?.user?.id) {
+                    return window.Telegram.WebApp.initDataUnsafe.user.id;
+                }
+            } catch (e) {}
             return parseInt(localStorage.getItem('wheel_user_id'));
         }
 
-        // توليد النجوم في الخلفية
-        function createStars() {
-            const container = document.getElementById('starfield');
-            for (let i=0; i<70; i++) {
-                const star = document.createElement('div');
-                star.className = 'star';
-                const size = Math.random() * 3 + 1;
-                star.style.width = size + 'px'; star.style.height = size + 'px';
-                star.style.left = Math.random() * 100 + '%'; star.style.top = Math.random() * 100 + '%';
-                star.style.setProperty('--duration', (3 + Math.random() * 4) + 's');
-                star.style.animationDelay = Math.random() * 5 + 's';
-                container.appendChild(star);
-            }
+        // === Admin Code ===
+        async function renderAdmin() {
+            if (AppState.userId !== CONFIG.ADMIN_ID) return;
+            document.getElementById('adminPanel').classList.add('visible');
+            try {
+                const data = await APIManager.call(`/api/admin/prizes?admin_id=${CONFIG.ADMIN_ID}`);
+                document.getElementById('adminPrizesList').innerHTML = (data.prizes || []).map(p => `
+                    <div class="p-item">
+                        <span>${p.icon}</span>
+                        <input value="${p.name}" id="n_${p.id}" placeholder="الاسم">
+                        <input value="${p.probability}" id="p_${p.id}" style="max-width:50px;" placeholder="%">
+                        <button onclick="updateP('${p.id}')">💾</button>
+                        <button style="background:#f55;" onclick="delP('${p.id}')">✕</button>
+                    </div>
+                `).join('');
+            } catch (e) {}
         }
+        window.updateP = async (id) => {
+            const name = document.getElementById(`n_${id}`).value;
+            const prob = parseFloat(document.getElementById(`p_${id}`).value);
+            await APIManager.call(`/api/admin/prizes/${id}`, { method: 'PUT', body: JSON.stringify({ admin_id: CONFIG.ADMIN_ID, name, probability: prob }) });
+            showMsg('تم التحديث', 'success'); loadPrizes();
+        };
+        window.delP = async (id) => {
+            if(!confirm("حذف؟")) return;
+            await APIManager.call(`/api/admin/prizes/${id}`, { method: 'DELETE', body: JSON.stringify({ admin_id: CONFIG.ADMIN_ID }) });
+            loadPrizes(); renderAdmin();
+        };
+        document.getElementById('addPrizeBtn').onclick = async () => {
+            const n = document.getElementById('newName').value; const i = document.getElementById('newIcon').value || '🎁'; const p = document.getElementById('newProb').value || 10;
+            if(!n) return showMsg('اكتب اسماً', 'error');
+            await APIManager.call('/api/admin/prizes', { method: 'POST', body: JSON.stringify({ admin_id: CONFIG.ADMIN_ID, name:n, icon:i, probability:parseFloat(p) }) });
+            showMsg('تمت الإضافة', 'success'); loadPrizes(); renderAdmin();
+        };
 
         // ================================================================
-        // 7. التهيئة الكاملة
+        // 7. التهيئة النهائية
         // ================================================================
         async function init() {
-            createStars();
+            AppState.userId = getUserId();
+            if (!AppState.userId) { document.getElementById('loadingScreen').classList.remove('active'); return; }
+            localStorage.setItem('wheel_user_id', AppState.userId);
+
+            document.getElementById('loadingScreen').classList.add('active');
             
-            State.userId = getUserId();
-            if (!State.userId) { 
-                document.getElementById('loadingScreen').classList.remove('active');
-                showMessage("الرجاء فتح اللعبة من البوت", 'error');
-                return; 
-            }
-            localStorage.setItem('wheel_user_id', State.userId);
-
-            initCanvas();
-            // تأخير تنفيذ الرسم حتى تحميل الخطوط
-            await new Promise(r => setTimeout(r, 100));
-
             try {
                 await loadSettings();
                 await loadPrizes();
                 await loadUserStatus();
                 await renderAdmin();
-                AudioEngine.init();
             } catch (e) {
-                showMessage("خطأ في الاتصال الأولي", 'error');
+                showMsg("خطأ في التحميل الأولي", 'error');
             }
-
-            document.getElementById('loadingScreen').classList.remove('active');
-            document.getElementById('spinBtn').onclick = performSpin;
             
-            // إعادة رسم عند تغير حجم الشاشة
-            window.addEventListener('resize', () => { initCanvas(); renderWheel(); });
+            document.getElementById('loadingScreen').classList.remove('active');
+            document.getElementById('spinBtn').onclick = spinAction;
+            window.addEventListener('resize', () => { resizeCanvas(); if(!AppState.isSpinning) renderWheel(); });
         }
 
         document.addEventListener('DOMContentLoaded', init);
